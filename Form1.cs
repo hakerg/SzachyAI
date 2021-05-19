@@ -26,6 +26,8 @@ namespace SzachyAI
         public Drawing drawing = new Drawing();
         public Graphics graphics;
 
+        MenuForm menuform = new MenuForm();
+
         public void HideCorners()
         {
             graphics.Clear(drawing.BackColor);
@@ -120,6 +122,21 @@ namespace SzachyAI
             Show();
             WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            menuform.Show();
         }
 
         public void BackgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
