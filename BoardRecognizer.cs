@@ -94,12 +94,20 @@ namespace SzachyAI {
             LoadTemplate(templatePath);
         }
 
-        public static Bitmap CaptureScreen() {
-            Rectangle vsBounds = SystemInformation.VirtualScreen;
-            Bitmap bitmap = new Bitmap(vsBounds.Width, vsBounds.Height);
+        public static Image<Bgr, byte> CaptureScreen(Screen screen) {
+            Rectangle bounds = screen.Bounds;
+            Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height);
             Graphics graphics = Graphics.FromImage(bitmap);
-            graphics.CopyFromScreen(vsBounds.Left, vsBounds.Top, 0, 0, bitmap.Size);
-            return bitmap;
+            graphics.CopyFromScreen(bounds.Location, Point.Empty, bitmap.Size);
+            return bitmap.ToImage<Bgr, byte>();
+        }
+
+        public static List<Image<Bgr, byte>> CaptureScreens() {
+            List<Image<Bgr, byte>> images = new List<Image<Bgr, byte>>();
+            foreach (Screen screen in Screen.AllScreens) {
+                images.Add(CaptureScreen(screen));
+            }
+            return images;
         }
 
         public void DetectBoardCorners(Image<Bgr, byte> image, double boardScale,
@@ -130,29 +138,58 @@ namespace SzachyAI {
             }
         }
 
-        public bool DetectBoardCorners(Image<Bgr, byte> image, out Rectangle corners,
-            double scaleMin = 0.5, double scaleMax = 2.0, double scaleStep = 0.1) {
+        public double FindBestScale(Image<Bgr, byte> image, double scaleMin, double scaleMax,
+            double scaleStep, out Rectangle corners, out double score) {
+            double bestScale = 0.0;
             corners = Rectangle.Empty;
-            double bestScore = double.MaxValue, bestScale = scaleMin;
+            score = double.MaxValue;
             for (double scale = scaleMin; scale <= scaleMax; scale += scaleStep) {
-                DetectBoardCorners(image, scale, out Rectangle newCorners, out double score);
-                if (score < bestScore) {
-                    bestScore = score;
-                    corners = newCorners;
+                DetectBoardCorners(image, scale, out Rectangle newCorners, out double newScore);
+                if (newScore < score) {
                     bestScale = scale;
-                }
-                if (scale + scaleStep > scaleMax && scaleStep > minScaleStep) {
-                    scale = bestScale - 0.75 * scaleStep;
-                    scaleMax = bestScale + scaleStep;
-                    scaleStep *= 0.5;
-                    image.ROI = Rectangle.Empty;
-                    Rectangle newRoi = corners;
-                    newRoi.Inflate(fieldSize);
-                    newRoi.Intersect(new Rectangle(Point.Empty, image.Size));
-                    image.ROI = newRoi;
+                    corners = newCorners;
+                    score = newScore;
                 }
             }
-            image.ROI = Rectangle.Empty;
+            return bestScale;
+        }
+
+        public bool DetectBoardCorners(List<Image<Bgr, byte>> images, out Rectangle corners, out int imageIndex,
+            double scaleMin = 0.25, double scaleMax = 4.0, double scaleStep = 0.1) {
+            corners = Rectangle.Empty;
+            imageIndex = 0;
+            double bestScale = 0.0;
+            double bestScore = double.MaxValue;
+            for (int i = 0; i < images.Count; i++) {
+                Image<Bgr, byte> image = images[i];
+                double scale = FindBestScale(
+                    image, scaleMin, scaleMax, scaleStep, out Rectangle newCorners, out double score);
+                if (score < bestScore) {
+                    corners = newCorners;
+                    imageIndex = i;
+                    bestScale = scale;
+                    bestScore = score;
+                }
+            }
+            Image<Bgr, byte> bestImage = images[imageIndex];
+            while (scaleStep > minScaleStep) {
+                scaleStep *= 0.5;
+                scaleMin = bestScale - scaleStep * 0.5;
+                scaleMax = scaleMin + scaleStep;
+                bestImage.ROI = Rectangle.Empty;
+                Rectangle newRoi = corners;
+                newRoi.Inflate(fieldSize);
+                newRoi.Intersect(new Rectangle(Point.Empty, bestImage.Size));
+                bestImage.ROI = newRoi;
+                double scale = FindBestScale(
+                    bestImage, scaleMin, scaleMax, scaleStep, out Rectangle newCorners, out double score);
+                if (score < bestScore) {
+                    corners = newCorners;
+                    bestScale = scale;
+                    bestScore = score;
+                }
+            }
+            bestImage.ROI = Rectangle.Empty;
             return bestScore < 0.1;
         }
 
@@ -193,7 +230,7 @@ namespace SzachyAI {
                             }
                         }
                     }
-                    if (fieldScore > 0.2 && bestPieceScore > 0.2) {
+                    if (fieldScore > 0.1 && bestPieceScore > 0.1) {
                         boardImage.ROI = Rectangle.Empty;
                         return false;
                     }

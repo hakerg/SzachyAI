@@ -19,14 +19,15 @@ namespace SzachyAI
     public partial class Form1 : Form
     {
         public BoardRecognizer recognizer = new BoardRecognizer();
-        public Image<Bgr, byte> screenImage;
+        public List<Image<Bgr, byte>> screenImages;
         public Bitmap screenBitmap, boardBitmap, constructedBitmap;
         public Rectangle corners = Rectangle.Empty;
+        public int screenIndex = 0;
         public string buttonText;
         public Drawing drawing = new Drawing();
         public Graphics graphics;
 
-        MenuForm menuform = new MenuForm();
+        public MenuForm menuform = new MenuForm();
 
         public void HideCorners()
         {
@@ -36,11 +37,13 @@ namespace SzachyAI
         public void ShowCornersOnScreen()
         {
             HideCorners();
-            Point screenLoc = SystemInformation.VirtualScreen.Location;
+            Point screenLoc = Screen.AllScreens[screenIndex].Bounds.Location;
             Point formLoc = new Point(corners.X + screenLoc.X - 2, corners.Y + screenLoc.Y - 2);
             Size formSize = new Size(corners.Width + 4, corners.Height + 4);
             drawing.Location = formLoc;
             drawing.ClientSize = formSize;
+            float scale = 96.0F / drawing.DeviceDpi;
+            drawing.Scale(new SizeF(scale, scale));
             graphics = drawing.CreateGraphics();
             graphics.DrawRectangle(Pens.Red, 0, 0, corners.Width + 3, corners.Height + 3);
             graphics.DrawRectangle(Pens.Red, 1, 1, corners.Width + 1, corners.Height + 1);
@@ -64,7 +67,7 @@ namespace SzachyAI
         {
             buttonText = "Przycinanie i skalowanie obrazu";
             backgroundWorker1.ReportProgress(0);
-            Image<Bgr, byte> boardImage = recognizer.GetScaledBoardImage(screenImage, corners);
+            Image<Bgr, byte> boardImage = recognizer.GetScaledBoardImage(screenImages[screenIndex], corners);
             boardBitmap = boardImage.ToBitmap();
             buttonText = "Wykrywanie pionków";
             backgroundWorker1.ReportProgress(0);
@@ -89,8 +92,8 @@ namespace SzachyAI
             buttonText = "Robienie zrzutu ekranu";
             backgroundWorker1.ReportProgress(0);
             Thread.Sleep(100);
-            screenImage = BoardRecognizer.CaptureScreen().ToImage<Bgr, byte>();
-            screenBitmap = screenImage.ToBitmap();
+            screenImages = BoardRecognizer.CaptureScreens();
+            screenBitmap = screenImages[screenIndex].ToBitmap();
             buttonText = "Zrzut ekranu gotowy";
             backgroundWorker1.ReportProgress(0);
             if (!corners.IsEmpty)
@@ -102,7 +105,7 @@ namespace SzachyAI
             }
             buttonText = "Wyszukiwanie planszy";
             backgroundWorker1.ReportProgress(0);
-            if (recognizer.DetectBoardCorners(screenImage, out corners))
+            if (recognizer.DetectBoardCorners(screenImages, out corners, out screenIndex))
             {
                 UpdateBoardWithCorners();
             }
@@ -117,19 +120,19 @@ namespace SzachyAI
             }
         }
 
-        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Show();
             WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
         }
 
-        private void tabPage1_Click(object sender, EventArgs e)
+        private void TabPage1_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             this.Close();
         }
