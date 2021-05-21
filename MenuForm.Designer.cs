@@ -32,7 +32,6 @@ namespace SzachyAI
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MenuForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.aboutButton = new System.Windows.Forms.Button();
-            this.debugModeButton = new System.Windows.Forms.Button();
             this.settingsButton = new System.Windows.Forms.Button();
             this.botModeButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -40,6 +39,7 @@ namespace SzachyAI
             this.label2 = new System.Windows.Forms.Label();
             this.exitButton = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -48,7 +48,6 @@ namespace SzachyAI
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(84)))), ((int)(((byte)(59)))), ((int)(((byte)(35)))));
             this.panel1.Controls.Add(this.aboutButton);
-            this.panel1.Controls.Add(this.debugModeButton);
             this.panel1.Controls.Add(this.settingsButton);
             this.panel1.Controls.Add(this.botModeButton);
             this.panel1.Controls.Add(this.label1);
@@ -62,14 +61,7 @@ namespace SzachyAI
             this.aboutButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(223)))), ((int)(((byte)(212)))));
             this.aboutButton.Name = "aboutButton";
             this.aboutButton.UseVisualStyleBackColor = true;
-            // 
-            // debugModeButton
-            // 
-            resources.ApplyResources(this.debugModeButton, "debugModeButton");
-            this.debugModeButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(223)))), ((int)(((byte)(212)))));
-            this.debugModeButton.Name = "debugModeButton";
-            this.debugModeButton.UseVisualStyleBackColor = true;
-            this.debugModeButton.Click += new System.EventHandler(this.debugModeButton_Click);
+            this.aboutButton.Click += new System.EventHandler(this.aboutButton_Click);
             // 
             // settingsButton
             // 
@@ -122,6 +114,14 @@ namespace SzachyAI
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.TabStop = false;
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // MenuForm
             // 
             resources.ApplyResources(this, "$this");
@@ -133,7 +133,6 @@ namespace SzachyAI
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "MenuForm";
-            this.Load += new System.EventHandler(this.MenuForm_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MenuForm_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MenuForm_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MenuForm_MouseUp);
@@ -149,7 +148,6 @@ namespace SzachyAI
 
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button aboutButton;
-        private System.Windows.Forms.Button debugModeButton;
         private System.Windows.Forms.Button settingsButton;
         private System.Windows.Forms.Button botModeButton;
         private System.Windows.Forms.Label label1;
@@ -157,5 +155,6 @@ namespace SzachyAI
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

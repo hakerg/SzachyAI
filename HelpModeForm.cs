@@ -12,24 +12,23 @@ namespace SzachyAI
 {
     public partial class HelpModeForm : Form
     {
-        bool boardRecognised = false;
-
         //Make form dragable at every point
         private bool dragging = false;
         private Point dragCursorPoint;
         private Point dragFormPoint;
 
-        public HelpModeForm()
+        MenuForm menuForm;
+
+        public HelpModeForm(MenuForm menuForm)
         {
+            this.menuForm = menuForm;
             InitializeComponent();
         }
         private void HelpModeForm_Load(object sender, EventArgs e)
         {
-            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-
-            recognisedBoardPcBox.Visible = Settings.EnableDebugMode;
-            boardLabel.Visible = Settings.EnableDebugMode;
-            if (Settings.EnableDebugMode)
+            recognisedBoardPcBox.Visible = Settings.enableDebugMode;
+            boardLabel.Visible = Settings.enableDebugMode;
+            if (Settings.enableDebugMode)
             {
                 this.Size = new Size(500, 500);
                 commandLabel.Location = new Point(32, 407);
@@ -43,42 +42,12 @@ namespace SzachyAI
 
         private void scanButton_Click(object sender, EventArgs e)
         {
-            commandLabel.Text = "Board recognised.";
-            boardRecognised = true;
+            menuForm.DetectBoard();
         }
 
         private void helpButton_Click(object sender, EventArgs e)
         {
-            if (!boardRecognised)
-            {
-                commandLabel.Text = "First recognise the board.";
-            }
-            else
-            {
-                Random random = new Random();
-                int draw = random.Next(0, 5);
-                switch (draw)
-                {
-                    case 0:
-                        commandLabel.Text = "Pawn to D4.";
-                        break;
-                    case 1:
-                        commandLabel.Text = "Bishop takes E5!";
-                        break;
-                    case 2:
-                        commandLabel.Text = "Knight E takes Queen."; //Jeśli dwie figury o tej samej nazwie mogą ruszyc się w to samo miejsce, należy podać położenie figury
-                                                                     //(zwykle kolumnę, ale jeśli dwie są na tej samej to wtedy należy podać z którego wiersza)
-                        break;
-                    case 3:
-                        commandLabel.Text = "Rook to D4, CHECK!"; // słowo szach raczej opcjonalne, ale IMO fajne ;)
-                                                                  // można jeszcze dodać jakieś inne słowa sytuacyjne typu "CheckMate" czy "Free Queen ;)"
-                        break;
-                    case 4:
-                        int pieceIndex = random.Next(Piece.names.Length);
-                        commandLabel.Text = Piece.names[pieceIndex] + " to A1.";
-                        break;
-                }
-            }
+            menuForm.GiveHint();
         }
 
         private void HelpModeForm_MouseDown(object sender, MouseEventArgs e)
@@ -104,7 +73,6 @@ namespace SzachyAI
 
         private void HelpModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            MenuForm menuForm = new MenuForm();
             menuForm.Show();
         }
 
@@ -123,6 +91,11 @@ namespace SzachyAI
                 Hide();
                 notifyIcon1.Visible = true;
             }
+        }
+
+        public void UpdateStatus() {
+            commandLabel.Text = menuForm.status;
+            recognisedBoardPcBox.Image = menuForm.constructedImage;
         }
     }
 }

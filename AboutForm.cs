@@ -12,20 +12,17 @@ namespace SzachyAI
 {
     public partial class AboutForm : Form
     {
-        MenuForm menuForm = new MenuForm();
-        public AboutForm()
+        MenuForm menuForm;
+
+        public AboutForm(MenuForm menuForm)
         {
+            this.menuForm = menuForm;
             InitializeComponent();
         }
 
         private void AboutForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             menuForm.Show();
-        }
-
-        private void AboutForm_Load(object sender, EventArgs e)
-        {
-            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         }
     }
 }

@@ -12,24 +12,23 @@ namespace SzachyAI
 {
     public partial class BotModeForm : Form
     {
-        bool boardRecognised = false;
-        bool botPlaying = false;
-
         //Make form dragable at every point
         private bool dragging = false;
         private Point dragCursorPoint;
         private Point dragFormPoint;
-        public BotModeForm()
+
+        MenuForm menuForm;
+
+        public BotModeForm(MenuForm menuForm)
         {
+            this.menuForm = menuForm;
             InitializeComponent();
         }
         private void BotModeForm_Load(object sender, EventArgs e)
         {
-            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-
-            recognisedBoardPcBox.Visible = Settings.EnableDebugMode;
-            boardLabel.Visible = Settings.EnableDebugMode;
-            if (Settings.EnableDebugMode)
+            recognisedBoardPcBox.Visible = Settings.enableDebugMode;
+            boardLabel.Visible = Settings.enableDebugMode;
+            if (Settings.enableDebugMode)
             {
                 this.Size = new Size(500, 500);
                 commandLabel.Location = new Point(32, 407);
@@ -42,33 +41,17 @@ namespace SzachyAI
         }
         private void scanButton_Click(object sender, EventArgs e)
         {
-            commandLabel.Text = "Board recognised.";
-            boardRecognised = true;
+            menuForm.DetectBoard();
         }
 
         private void startButton_Click(object sender, EventArgs e)
         {
-            if (!boardRecognised)
-            {
-                commandLabel.Text = "First recognise the board.";
-            }
-            else
-            {
-                botPlaying = !botPlaying;
-                if (botPlaying)
-                {
-                    startButton.Text = "Stop the bot";
-                    commandLabel.Text = "Playing.";
-                }
-                else
-                {
-                    startButton.Text = "Start";
-                    commandLabel.Text = "Waiting.";
-                    // Tutaj też można dawać teksty sytuacyjne podczas trwania gry bota, np zeby 'komentował' własną grę, jak coś zabiera to mówi itd.
-                    // ale w taki bardziej komentatorski sposób niż "Bishop takes D4", tylko np "Free piece, I like that :)",
-                    // tylko to niestety tez wymaga nieco więcej kodowania bo musi wiedzieć czy faktycznie pion był darmowy czy to wymiana,
-                    // więc to raczej opcjonalne jak starczy czasu
-                }
+            if (startButton.Text == "Start") {
+                menuForm.StartBotMode();
+                startButton.Text = "Stop";
+            } else {
+                menuForm.StopBotMode();
+                startButton.Text = "Start";
             }
         }
 
@@ -95,7 +78,6 @@ namespace SzachyAI
 
         private void BotModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            MenuForm menuForm = new MenuForm();
             menuForm.Show();
         }
 
@@ -114,6 +96,11 @@ namespace SzachyAI
             Show();
             WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
+        }
+
+        public void UpdateStatus() {
+            commandLabel.Text = menuForm.status;
+            recognisedBoardPcBox.Image = menuForm.constructedImage;
         }
     }
 }

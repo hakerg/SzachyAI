@@ -8,11 +8,7 @@ namespace SzachyAI
 {
     static class Settings
     {
-        private static bool enableDebugMode = false;
-        public static bool EnableDebugMode
-        {
-            get => enableDebugMode;
-            set => enableDebugMode = value;
-        }
+        public static bool enableDebugMode = false;
+        public static bool showBorder = true;
     }
 }

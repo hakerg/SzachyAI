@@ -14,42 +14,52 @@ namespace SzachyAI
 {
     public partial class SettingsForm : Form
     {
-        MenuForm menuForm = new MenuForm();
-        public SettingsForm()
-        {
-            InitializeComponent();
+        MenuForm menuForm;
+
+        private void LoadSettings() {
+            if (Thread.CurrentThread.CurrentUICulture.Name == "pl-PL") {
+                comboBox1.SelectedIndex = 0;
+            } else if (Thread.CurrentThread.CurrentUICulture.Name == "en") {
+                comboBox1.SelectedIndex = 1;
+            }
+            debugModeCheckBox.Checked = Settings.enableDebugMode;
+            borderCheckBox.Checked = Settings.showBorder;
         }
 
-        private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
+        public SettingsForm(MenuForm menuForm)
         {
-            menuForm.Show();
+            this.menuForm = menuForm;
+            InitializeComponent();
+            LoadSettings();
+        }
+
+        private void ChangeLanguage(CultureInfo language) {
+            if (language.Name != Thread.CurrentThread.CurrentUICulture.Name) {
+                Thread.CurrentThread.CurrentUICulture = language;
+                Controls.Clear();
+                InitializeComponent();
+                LoadSettings();
+                menuForm.ChangeLanguage();
+            }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedItem.ToString() == "Polish")
-            {
-                Thread.CurrentThread.CurrentUICulture = new CultureInfo("pl-PL");
+            if (comboBox1.SelectedItem.ToString() == "Polski") {
+                ChangeLanguage(new CultureInfo("pl-PL"));
             }
-            else if(comboBox1.SelectedItem.ToString() == "English")
-            {
-                Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
+            else if(comboBox1.SelectedItem.ToString() == "English") {
+                ChangeLanguage(new CultureInfo("en"));
             }
-            Controls.Clear();
-            InitializeComponent();
-            debugModeCheckBox.Checked = Settings.EnableDebugMode;
-            menuForm = new MenuForm();
         }
 
         private void debugModeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.EnableDebugMode = debugModeCheckBox.Checked;
+            Settings.enableDebugMode = debugModeCheckBox.Checked;
         }
 
-        private void SettingsForm_Load(object sender, EventArgs e)
-        {
-            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            debugModeCheckBox.Checked = Settings.EnableDebugMode;
+        private void borderCheckBox_CheckedChanged(object sender, EventArgs e) {
+            Settings.showBorder = borderCheckBox.Checked;
         }
     }
 }

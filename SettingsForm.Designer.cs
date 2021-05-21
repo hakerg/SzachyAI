@@ -30,26 +30,20 @@ namespace SzachyAI
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
-            this.currentLangLabel = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.debugModeCheckBox = new System.Windows.Forms.CheckBox();
-            this.languageLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.borderCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
-            // 
-            // currentLangLabel
-            // 
-            resources.ApplyResources(this.currentLangLabel, "currentLangLabel");
-            this.currentLangLabel.Name = "currentLangLabel";
             // 
             // comboBox1
             // 
+            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             resources.GetString("comboBox1.Items"),
             resources.GetString("comboBox1.Items1")});
-            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -60,40 +54,37 @@ namespace SzachyAI
             this.debugModeCheckBox.UseVisualStyleBackColor = true;
             this.debugModeCheckBox.CheckedChanged += new System.EventHandler(this.debugModeCheckBox_CheckedChanged);
             // 
-            // languageLabel
-            // 
-            resources.ApplyResources(this.languageLabel, "languageLabel");
-            this.languageLabel.Name = "languageLabel";
-            // 
             // label1
             // 
             resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
             // 
+            // borderCheckBox
+            // 
+            resources.ApplyResources(this.borderCheckBox, "borderCheckBox");
+            this.borderCheckBox.Name = "borderCheckBox";
+            this.borderCheckBox.UseVisualStyleBackColor = true;
+            this.borderCheckBox.CheckedChanged += new System.EventHandler(this.borderCheckBox_CheckedChanged);
+            // 
             // SettingsForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.borderCheckBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.languageLabel);
             this.Controls.Add(this.debugModeCheckBox);
             this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.currentLangLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "SettingsForm";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
-            this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label currentLangLabel;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.CheckBox debugModeCheckBox;
-        private System.Windows.Forms.Label languageLabel;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox borderCheckBox;
     }
 }

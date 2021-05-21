@@ -51,8 +51,8 @@ namespace SzachyAI
             // 
             // panel1
             // 
-            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(134)))), ((int)(((byte)(39)))));
+            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
             // 
             // helpButton
@@ -71,13 +71,12 @@ namespace SzachyAI
             // 
             // notifyIcon1
             // 
-            resources.ApplyResources(this.notifyIcon1, "notifyIcon1");
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
             // recognisedBoardPcBox
             // 
-            resources.ApplyResources(this.recognisedBoardPcBox, "recognisedBoardPcBox");
             this.recognisedBoardPcBox.BackColor = System.Drawing.Color.White;
+            resources.ApplyResources(this.recognisedBoardPcBox, "recognisedBoardPcBox");
             this.recognisedBoardPcBox.Name = "recognisedBoardPcBox";
             this.recognisedBoardPcBox.TabStop = false;
             // 
