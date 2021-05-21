@@ -23,6 +23,23 @@ namespace SzachyAI
         {
             InitializeComponent();
         }
+        private void HelpModeForm_Load(object sender, EventArgs e)
+        {
+            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+
+            recognisedBoardPcBox.Visible = Settings.EnableDebugMode;
+            boardLabel.Visible = Settings.EnableDebugMode;
+            if (Settings.EnableDebugMode)
+            {
+                this.Size = new Size(500, 500);
+                commandLabel.Location = new Point(32, 407);
+            }
+            else
+            {
+                commandLabel.Location = new Point(32, 207);
+                this.Size = new Size(500, 300);
+            }
+        }
 
         private void scanButton_Click(object sender, EventArgs e)
         {
@@ -89,6 +106,23 @@ namespace SzachyAI
         {
             MenuForm menuForm = new MenuForm();
             menuForm.Show();
+        }
+
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
+        }
+
+        private void HelpModeForm_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+                notifyIcon1.Visible = true;
+            }
         }
     }
 }

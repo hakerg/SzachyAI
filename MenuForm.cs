@@ -15,6 +15,8 @@ namespace SzachyAI
         BotModeForm botForm;
         HelpModeForm helpForm;
         Form1 debugForm;
+        SettingsForm settingsForm;
+        AboutForm aboutForm;
 
         //Make "FormBorderStyle = None" form dragable
         private bool dragging = false;
@@ -49,6 +51,12 @@ namespace SzachyAI
             botForm = new BotModeForm();
             helpForm = new HelpModeForm();
             debugForm = new Form1();
+            settingsForm = new SettingsForm();
+            aboutForm= new AboutForm();
+
+            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+
+            debugModeButton.Visible = Settings.EnableDebugMode;
         }
 
         private void MenuForm_MouseDown(object sender, MouseEventArgs e)
@@ -76,6 +84,12 @@ namespace SzachyAI
         {
             this.Hide();
             debugForm.Show();
+        }
+
+        private void settingsButton_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            settingsForm.Show();
         }
     }
 }
