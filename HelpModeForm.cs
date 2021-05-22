@@ -42,12 +42,12 @@ namespace SzachyAI
 
         private void scanButton_Click(object sender, EventArgs e)
         {
-            menuForm.DetectBoard();
+            menuForm.detectBoardOnce = true;
         }
 
         private void helpButton_Click(object sender, EventArgs e)
         {
-            menuForm.GiveHint();
+            menuForm.giveHintOnce = true;
         }
 
         private void HelpModeForm_MouseDown(object sender, MouseEventArgs e)
@@ -73,6 +73,7 @@ namespace SzachyAI
 
         private void HelpModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            menuForm.InvalidateBorder();
             menuForm.Show();
         }
 
@@ -95,6 +96,7 @@ namespace SzachyAI
 
         public void UpdateStatus() {
             commandLabel.Text = menuForm.status;
+            notifyIcon1.Text = "ChessAI: " + menuForm.status;
             recognisedBoardPcBox.Image = menuForm.constructedImage;
         }
     }

@@ -129,7 +129,7 @@
     <value>150, 37</value>
   </data>
   <data name="scanButton.Text" xml:space="preserve">
-    <value>Wykryj planszę</value>
+    <value>Wyszukaj planszę</value>
   </data>
   <data name="panel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>2, 2, 2, 2</value>

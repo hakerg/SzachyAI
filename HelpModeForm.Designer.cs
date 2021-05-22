@@ -71,6 +71,7 @@ namespace SzachyAI
             // 
             // notifyIcon1
             // 
+            resources.ApplyResources(this.notifyIcon1, "notifyIcon1");
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
             // recognisedBoardPcBox
@@ -97,6 +98,7 @@ namespace SzachyAI
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.scanButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "HelpModeForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HelpModeForm_FormClosing);
             this.Load += new System.EventHandler(this.HelpModeForm_Load);

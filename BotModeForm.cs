@@ -41,16 +41,16 @@ namespace SzachyAI
         }
         private void scanButton_Click(object sender, EventArgs e)
         {
-            menuForm.DetectBoard();
+            menuForm.detectBoardOnce = true;
         }
 
         private void startButton_Click(object sender, EventArgs e)
         {
             if (startButton.Text == "Start") {
-                menuForm.StartBotMode();
+                menuForm.runBot = true;
                 startButton.Text = "Stop";
             } else {
-                menuForm.StopBotMode();
+                menuForm.runBot = false;
                 startButton.Text = "Start";
             }
         }
@@ -78,6 +78,7 @@ namespace SzachyAI
 
         private void BotModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            menuForm.InvalidateBorder();
             menuForm.Show();
         }
 
@@ -100,6 +101,7 @@ namespace SzachyAI
 
         public void UpdateStatus() {
             commandLabel.Text = menuForm.status;
+            notifyIcon1.Text = "ChessAI: " + menuForm.status;
             recognisedBoardPcBox.Image = menuForm.constructedImage;
         }
     }

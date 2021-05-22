@@ -39,7 +39,7 @@ namespace SzachyAI
                 Controls.Clear();
                 InitializeComponent();
                 LoadSettings();
-                menuForm.ChangeLanguage();
+                menuForm.ChangeLanguage(language);
             }
         }
 

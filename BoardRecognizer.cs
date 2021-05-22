@@ -202,8 +202,9 @@ namespace SzachyAI {
 
         public bool RecognizeBoard(Image<Bgr, byte> boardImage, out Board board) {
             board = new Board();
-            for (int y = 0; y < Board.height; y++) {
-                for (int x = 0; x < Board.width; x++) {
+            int allowedMistakes = 4;
+            for (int y = 0; y < Board.height && allowedMistakes >= 0; y++) {
+                for (int x = 0; x < Board.width && allowedMistakes >= 0; x++) {
                     int bc = (x + y) % 2;
                     Point start = new Point(x * fieldSize.Width, y * fieldSize.Height);
                     boardImage.ROI = new Rectangle(start, fieldSize);
@@ -231,8 +232,10 @@ namespace SzachyAI {
                         }
                     }
                     if (fieldScore > 0.1 && bestPieceScore > 0.1) {
-                        boardImage.ROI = Rectangle.Empty;
-                        return false;
+                        allowedMistakes--;
+                        if (fieldScore > 0.2 && bestPieceScore > 0.2) {
+                            allowedMistakes = -1;
+                        }
                     }
                     if (bestPieceScore < fieldScore) {
                         Point pos = new Point(x, y);
@@ -241,7 +244,7 @@ namespace SzachyAI {
                 }
             }
             boardImage.ROI = Rectangle.Empty;
-            return true;
+            return allowedMistakes >= 0;
         }
     }
 }
