@@ -34,6 +34,13 @@ namespace SzachyAI
             this.debugModeCheckBox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.borderCheckBox = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.hintModeComboBox = new System.Windows.Forms.ComboBox();
+            this.mouseComboBox = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.timeNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.timeNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -66,16 +73,77 @@ namespace SzachyAI
             this.borderCheckBox.UseVisualStyleBackColor = true;
             this.borderCheckBox.CheckedChanged += new System.EventHandler(this.borderCheckBox_CheckedChanged);
             // 
+            // label2
+            // 
+            resources.ApplyResources(this.label2, "label2");
+            this.label2.Name = "label2";
+            // 
+            // hintModeComboBox
+            // 
+            resources.ApplyResources(this.hintModeComboBox, "hintModeComboBox");
+            this.hintModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.hintModeComboBox.FormattingEnabled = true;
+            this.hintModeComboBox.Items.AddRange(new object[] {
+            resources.GetString("hintModeComboBox.Items"),
+            resources.GetString("hintModeComboBox.Items1"),
+            resources.GetString("hintModeComboBox.Items2")});
+            this.hintModeComboBox.Name = "hintModeComboBox";
+            this.hintModeComboBox.SelectedIndexChanged += new System.EventHandler(this.hintModeComboBox_SelectedIndexChanged);
+            // 
+            // mouseComboBox
+            // 
+            resources.ApplyResources(this.mouseComboBox, "mouseComboBox");
+            this.mouseComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mouseComboBox.FormattingEnabled = true;
+            this.mouseComboBox.Items.AddRange(new object[] {
+            resources.GetString("mouseComboBox.Items"),
+            resources.GetString("mouseComboBox.Items1")});
+            this.mouseComboBox.Name = "mouseComboBox";
+            this.mouseComboBox.SelectedIndexChanged += new System.EventHandler(this.mouseComboBox_SelectedIndexChanged);
+            // 
+            // label3
+            // 
+            resources.ApplyResources(this.label3, "label3");
+            this.label3.Name = "label3";
+            // 
+            // label4
+            // 
+            resources.ApplyResources(this.label4, "label4");
+            this.label4.Name = "label4";
+            // 
+            // timeNumericUpDown
+            // 
+            resources.ApplyResources(this.timeNumericUpDown, "timeNumericUpDown");
+            this.timeNumericUpDown.Increment = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.timeNumericUpDown.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.timeNumericUpDown.Name = "timeNumericUpDown";
+            this.timeNumericUpDown.ValueChanged += new System.EventHandler(this.timeNumericUpDown_ValueChanged);
+            // 
             // SettingsForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.timeNumericUpDown);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.mouseComboBox);
+            this.Controls.Add(this.hintModeComboBox);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.borderCheckBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.debugModeCheckBox);
             this.Controls.Add(this.comboBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "SettingsForm";
+            ((System.ComponentModel.ISupportInitialize)(this.timeNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -86,5 +154,11 @@ namespace SzachyAI
         private System.Windows.Forms.CheckBox debugModeCheckBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox borderCheckBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox hintModeComboBox;
+        private System.Windows.Forms.ComboBox mouseComboBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown timeNumericUpDown;
     }
 }

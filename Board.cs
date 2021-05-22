@@ -8,6 +8,8 @@ namespace SzachyAI {
         public static int width = 8;
         public static int height = 8;
         public static int maxPiecesPerColor = 16;
+        public static string[] xNames = new string[] { "a", "b", "c", "d", "e", "f", "g", "h" };
+        public static string[] yNames = new string[] { "8", "7", "6", "5", "4", "3", "2", "1" };
 
         // top left: (x=0, y=0), white field with black rook
         // black pawn goes positive y
@@ -60,7 +62,7 @@ namespace SzachyAI {
                             Move move = new Move(piece, newPos);
                             output.Add(move);
                             // two field move
-                            if (!piece.moved) {
+                            if (piece.pos.Y == MoveRule.pawnStartY[(int)color]) {
                                 Point newPos2 = newPos;
                                 newPos2.Offset(dir);
                                 if (PieceAt(newPos2) == null) {
@@ -95,7 +97,7 @@ namespace SzachyAI {
                                     output.Add(move);
                                 }
                             }
-                            if (!rule.recursive) {
+                            if (!rule.recursive || attackedPiece != null) {
                                 break;
                             }
                             newPos.Offset(dir);
@@ -135,7 +137,9 @@ namespace SzachyAI {
                 score += Piece.scores[(int)fragilePiece.type];
             }
             int color = (int)move.piece.color;
-            if (move.piece.type == Type.Pawn && !move.piece.moved && move.to.Y == MoveRule.pawnTwoFieldY[color]) {
+            if (move.piece.type == Type.Pawn &&
+                move.piece.pos.Y == MoveRule.pawnStartY[(int)move.piece.color] &&
+                move.to.Y == MoveRule.pawnTwoFieldY[color]) {
                 // activate capture by passing for next move
                 fragileField.X = move.to.X;
                 fragileField.Y = MoveRule.pawnPassingY[color];

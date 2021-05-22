@@ -26,7 +26,7 @@ namespace SzachyAI {
         public void SetFieldSize(Size size) {
             if (fieldSize.IsEmpty) {
                 fieldSize = size;
-                clippedROI = new Rectangle(size.Width / 4, size.Height / 4, size.Width / 2, size.Height / 2);
+                clippedROI = new Rectangle(size.Width / 8, size.Height / 8, size.Width * 3 / 4, size.Height * 3 / 4);
             } else if (!fieldSize.Equals(size)) {
                 throw new Exception("Template images should have the same size");
             }

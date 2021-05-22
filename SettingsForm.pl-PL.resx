@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="comboBox1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>81, 11</value>
+  </data>
   <data name="debugModeCheckBox.Size" type="System.Drawing.Size, System.Drawing">
     <value>160, 17</value>
   </data>
@@ -135,6 +138,48 @@
   </data>
   <data name="borderCheckBox.Text" xml:space="preserve">
     <value>Pokaż ramkę wokół planszy</value>
+  </data>
+  <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>93, 13</value>
+  </data>
+  <data name="label2.Text" xml:space="preserve">
+    <value>Tryb podpowiedzi:</value>
+  </data>
+  <data name="hintModeComboBox.Items" xml:space="preserve">
+    <value>Narysuj na ekranie</value>
+  </data>
+  <data name="hintModeComboBox.Items1" xml:space="preserve">
+    <value>Etykieta w oknie</value>
+  </data>
+  <data name="hintModeComboBox.Items2" xml:space="preserve">
+    <value>Tekst na mowę</value>
+  </data>
+  <data name="hintModeComboBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>108, 78</value>
+  </data>
+  <data name="mouseComboBox.Items" xml:space="preserve">
+    <value>Przeciąganie</value>
+  </data>
+  <data name="mouseComboBox.Items1" xml:space="preserve">
+    <value>Klikanie</value>
+  </data>
+  <data name="mouseComboBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>136, 103</value>
+  </data>
+  <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>121, 13</value>
+  </data>
+  <data name="label3.Text" xml:space="preserve">
+    <value>Wykonuj ruchy poprzez:</value>
+  </data>
+  <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>191, 13</value>
+  </data>
+  <data name="label4.Text" xml:space="preserve">
+    <value>Czas pomiędzy zdarzeniami myszy [ms]:</value>
+  </data>
+  <data name="timeNumericUpDown.Location" type="System.Drawing.Point, System.Drawing">
+    <value>207, 129</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

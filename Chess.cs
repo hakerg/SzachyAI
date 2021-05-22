@@ -12,5 +12,9 @@ namespace SzachyAI {
         public static bool IsValidInChess(this Point point) {
             return point.X >= 0 && point.X < Board.width && point.Y >= 0 && point.Y < Board.height;
         }
+
+        public static string ToChessString(this Point point) {
+            return Board.xNames[point.X] + Board.yNames[point.Y];
+        }
     }
 }

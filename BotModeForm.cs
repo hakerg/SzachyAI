@@ -44,14 +44,23 @@ namespace SzachyAI
             menuForm.detectBoardOnce = true;
         }
 
+        public void StartBot() {
+            MessageBox.Show(this, "Press right mouse button to stop", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            menuForm.runBot = true;
+            startButton.Text = "Stop";
+        }
+
+        public void StopBot() {
+            menuForm.runBot = false;
+            startButton.Text = "Start";
+        }
+
         private void startButton_Click(object sender, EventArgs e)
         {
             if (startButton.Text == "Start") {
-                menuForm.runBot = true;
-                startButton.Text = "Stop";
+                StartBot();
             } else {
-                menuForm.runBot = false;
-                startButton.Text = "Start";
+                StopBot();
             }
         }
 

@@ -46,6 +46,8 @@ namespace SzachyAI {
             new Point[] { SW, SE }
         };
 
+        public static int[] pawnStartY = new int[] { 6, 1 };
+
         public static int[] pawnPassingY = new int[] { 5, 2 };
 
         public static int[] pawnTwoFieldY = new int[] { 4, 3 };

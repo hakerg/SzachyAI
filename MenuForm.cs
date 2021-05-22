@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,20 +17,41 @@ namespace SzachyAI
 {
     public partial class MenuForm : Form
     {
-        public enum Status { Ready, DetectingCorners, DetectingPieces, FindingMove };
+
+        [DllImport("user32.dll")]
+        public static extern int mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+
+        const int MOUSEEVENTF_MOVE = 0x0001;
+        const int MOUSEEVENTF_LEFTDOWN = 0x0002;
+        const int MOUSEEVENTF_LEFTUP = 0x0004;
+        const int MOUSEEVENTF_RIGHTDOWN = 0x0008;
+        const int MOUSEEVENTF_RIGHTUP = 0x0010;
+        const int MOUSEEVENTF_MIDDLEDOWN = 0x0020;
+        const int MOUSEEVENTF_MIDDLEUP = 0x0040;
+        const int MOUSEEVENTF_ABSOLUTE = 0x8000;
+
+        [DllImport("User32.dll")]
+        private static extern short GetAsyncKeyState(int vKey);
+
+        const int VK_LBUTTON = 0x01;
+        const int VK_RBUTTON = 0x02;
+
+        public enum Status { Ready, DetectingCorners, DetectingPieces, FindingMove, SimulatingMove };
 
         public List<string> englishStatus = new List<string> {
             "Ready",
             "Detecting chessboard corners",
             "Detecting pieces",
-            "Finding move"
+            "Finding move",
+            "Simulating mouse clicks"
         };
 
         public List<string> polishStatus = new List<string> {
             "Gotowy",
             "Wykrywanie krawędzi planszy",
             "Wykrywanie figur",
-            "Wyszukiwanie ruchu"
+            "Wyszukiwanie ruchu",
+            "Wykonywanie ruchu"
         };
 
         //Make "FormBorderStyle = None" form dragable
@@ -38,7 +60,7 @@ namespace SzachyAI
         private Point dragFormPoint;
         private HelpModeForm helpModeForm;
         private BotModeForm botModeForm;
-        private Drawing drawing;
+        public Drawing drawing;
 
         public bool cornersValid = false;
         public Screen boardScreen;
@@ -140,9 +162,35 @@ namespace SzachyAI
             Invoke((Action)delegate { drawing.Clear(); });
         }
 
-        public void ValidateBorder() {
+        public void ValidateBorder(List<Move> moves = null) {
             cornersValid = true;
-            Invoke((Action)delegate { drawing.Draw(boardScreen, corners); });
+            Invoke((Action)delegate { drawing.Draw(boardScreen, corners, moves); });
+        }
+
+        public void SimulateMove(Move move) {
+            UpdateStatus(Status.SimulatingMove);
+            int x1 = (int)(boardScreen.Bounds.Location.X + corners.X + (move.piece.pos.X + 0.5F) * corners.Width / Board.width);
+            int y1 = (int)(boardScreen.Bounds.Location.Y + corners.Y + (move.piece.pos.Y + 0.5F) * corners.Height / Board.height);
+            int x2 = (int)(boardScreen.Bounds.Location.X + corners.X + (move.to.X + 0.5F) * corners.Width / Board.width);
+            int y2 = (int)(boardScreen.Bounds.Location.Y + corners.Y + (move.to.Y + 0.5F) * corners.Height / Board.height);
+            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+            Thread.Sleep(Settings.eventTime);
+            Cursor.Position = new Point(x1, y1);
+            Thread.Sleep(Settings.eventTime);
+            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+            Thread.Sleep(Settings.eventTime);
+            if (Settings.mouseMode == MouseMode.Clicking) {
+                mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+                Thread.Sleep(Settings.eventTime);
+            }
+            Cursor.Position = new Point(x2, y2);
+            Thread.Sleep(Settings.eventTime);
+            if (Settings.mouseMode == MouseMode.Clicking) {
+                mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+                Thread.Sleep(Settings.eventTime);
+            }
+            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+            Thread.Sleep(Settings.eventTime);
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
@@ -151,7 +199,6 @@ namespace SzachyAI
                 if (detectBoardOnce || (!cornersValid && (runBot || giveHintOnce))) {
                     InvalidateBorder();
                     UpdateStatus(Status.DetectingCorners);
-
                     Thread.Sleep(100);
                     List<Image<Bgr, byte>> screens = BoardRecognizer.CaptureScreens();
                     if (recognizer.DetectBoardCorners(screens, out corners, out int imageIndex)) {
@@ -163,16 +210,44 @@ namespace SzachyAI
                     UpdateStatus(Status.Ready);
                 }
 
-                if (cornersValid) {
+                if (GetAsyncKeyState(VK_RBUTTON) > 0) {
+                    Invoke((Action)delegate {
+                        if (botModeForm != null && !botModeForm.IsDisposed) {
+                            botModeForm.StopBot();
+                        }
+                    });
+                }
+
+                if (cornersValid && (giveHintOnce || runBot)) {
                     UpdateStatus(Status.DetectingPieces);
                     if (boardScreenImage == null) {
+                        ValidateBorder();
+                        Cursor.Position = new Point(drawing.Bounds.Right, drawing.Bounds.Bottom);
+                        Thread.Sleep(100);
                         boardScreenImage = BoardRecognizer.CaptureScreen(boardScreen);
                     }
                     Image<Bgr, byte> boardImage = recognizer.GetScaledBoardImage(boardScreenImage, corners);
                     if (recognizer.RecognizeBoard(boardImage, out Board board)) {
                         constructedImage = recognizer.ConstructBoardImage(board).ToBitmap();
-                        // TODO: hint / bot
-                        giveHintOnce = false;
+                        List<Move> moves = new List<Move>();
+                        board.GetMoves(Color.White, moves);
+                        Move move = moves[0];
+                        if (giveHintOnce) {
+                            switch (Settings.hintMode) {
+                                case HintMode.DrawOnScreen:
+                                    ValidateBorder(new List<Move> { move });
+                                    break;
+                                case HintMode.WindowLabel:
+                                    // TODO
+                                    break;
+                                case HintMode.TextToSpeech:
+                                    // TODO
+                                    break;
+                            }
+                            giveHintOnce = false;
+                        } else if (runBot) {
+                            SimulateMove(move);
+                        }
                     }
                     else {
                         InvalidateBorder();

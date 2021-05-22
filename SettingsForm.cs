@@ -24,6 +24,9 @@ namespace SzachyAI
             }
             debugModeCheckBox.Checked = Settings.enableDebugMode;
             borderCheckBox.Checked = Settings.showBorder;
+            hintModeComboBox.SelectedIndex = (int)Settings.hintMode;
+            mouseComboBox.SelectedIndex = (int)Settings.mouseMode;
+            timeNumericUpDown.Value = Settings.eventTime;
         }
 
         public SettingsForm(MenuForm menuForm)
@@ -60,6 +63,18 @@ namespace SzachyAI
 
         private void borderCheckBox_CheckedChanged(object sender, EventArgs e) {
             Settings.showBorder = borderCheckBox.Checked;
+        }
+
+        private void hintModeComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            Settings.hintMode = (HintMode)hintModeComboBox.SelectedIndex;
+        }
+
+        private void mouseComboBox_SelectedIndexChanged(object sender, EventArgs e) {
+            Settings.mouseMode = (MouseMode)mouseComboBox.SelectedIndex;
+        }
+
+        private void timeNumericUpDown_ValueChanged(object sender, EventArgs e) {
+            Settings.eventTime = (int)timeNumericUpDown.Value;
         }
     }
 }

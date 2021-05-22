@@ -10,6 +10,18 @@ namespace SzachyAI {
             "pawn", "rook", "knight", "bishop", "queen", "king"
         };
 
+        public static string[] polishNames = new string[] {
+            "pion", "wieża", "skoczek", "goniec", "hetman", "król"
+        };
+
+        public static string[] symbols = new string[] {
+            "", "R", "N", "B", "Q", "K"
+        };
+
+        public static string[] polishSymbols = new string[] {
+            "", "W", "S", "G", "H", "K"
+        };
+
         public static int[] scores = new int[] {
             1, 5, 3, 3, 9, 0
         };
