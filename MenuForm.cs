@@ -222,7 +222,9 @@ namespace SzachyAI
                     UpdateStatus(Status.DetectingPieces);
                     if (boardScreenImage == null) {
                         ValidateBorder();
-                        Cursor.Position = new Point(drawing.Bounds.Right, drawing.Bounds.Bottom);
+                        if (drawing.Bounds.Contains(Cursor.Position)) {
+                            Cursor.Position = new Point(drawing.Bounds.Right, drawing.Bounds.Bottom);
+                        }
                         Thread.Sleep(100);
                         boardScreenImage = BoardRecognizer.CaptureScreen(boardScreen);
                     }
