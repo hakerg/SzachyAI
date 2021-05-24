@@ -22,11 +22,13 @@ namespace SzachyAI {
         public Dictionary<Size, Image<Bgr, byte>> emptyBoards = new Dictionary<Size, Image<Bgr, byte>>();
         public Dictionary<Size, Image<Bgr, byte>> masks = new Dictionary<Size, Image<Bgr, byte>>();
         public double minScaleStep;
+        public double reduceFactor = 0.25;
 
         public void SetFieldSize(Size size) {
             if (fieldSize.IsEmpty) {
                 fieldSize = size;
-                clippedROI = new Rectangle(size.Width / 8, size.Height / 8, size.Width * 3 / 4, size.Height * 3 / 4);
+                clippedROI = new Rectangle(size.Width.Scale(0.125), size.Height.Scale(0.125),
+                    size.Width.Scale(0.75), size.Height.Scale(0.75));
             } else if (!fieldSize.Equals(size)) {
                 throw new Exception("Template images should have the same size");
             }
@@ -110,19 +112,18 @@ namespace SzachyAI {
             return images;
         }
 
-        public void DetectBoardCorners(Image<Bgr, byte> image, double boardScale,
+        public void DetectBoardCorners(Image<Bgr, byte> image, Size boardSize,
             out Rectangle corners, out double score) {
-            Size size = new Size((int)(boardSize.Width * boardScale), (int)(boardSize.Height * boardScale));
             Image<Bgr, byte> scaledBoard;
             Image<Bgr, byte> mask;
-            if (emptyBoards.ContainsKey(size)) {
-                scaledBoard = emptyBoards[size];
-                mask = masks[size];
+            if (emptyBoards.ContainsKey(boardSize)) {
+                scaledBoard = emptyBoards[boardSize];
+                mask = masks[boardSize];
             } else {
-                scaledBoard = emptyBoards[boardSize].Resize(size.Width, size.Height, Inter.Linear);
-                mask = masks[boardSize].Resize(size.Width, size.Height, Inter.Linear);
-                emptyBoards[size] = scaledBoard;
-                masks[size] = mask;
+                scaledBoard = emptyBoards[this.boardSize].Resize(boardSize.Width, boardSize.Height, Inter.Linear);
+                mask = masks[this.boardSize].Resize(boardSize.Width, boardSize.Height, Inter.Linear);
+                emptyBoards[boardSize] = scaledBoard;
+                masks[boardSize] = mask;
             }
             try {
                 Image<Gray, float> match = new Image<Gray, float>
@@ -131,7 +132,7 @@ namespace SzachyAI {
                 match.MinMax(out double[] minValues, out _, out Point[] bestMatches, out _);
                 score = minValues[0];
                 bestMatches[0].Offset(image.ROI.Location);
-                corners = new Rectangle(bestMatches[0], size);
+                corners = new Rectangle(bestMatches[0], boardSize);
             } catch (CvException) {
                 corners = Rectangle.Empty;
                 score = double.MaxValue;
@@ -144,7 +145,7 @@ namespace SzachyAI {
             corners = Rectangle.Empty;
             score = double.MaxValue;
             for (double scale = scaleMin; scale <= scaleMax; scale += scaleStep) {
-                DetectBoardCorners(image, scale, out Rectangle newCorners, out double newScore);
+                DetectBoardCorners(image, boardSize.Scale(scale), out Rectangle newCorners, out double newScore);
                 if (newScore < score) {
                     bestScale = scale;
                     corners = newCorners;
@@ -162,10 +163,11 @@ namespace SzachyAI {
             double bestScore = double.MaxValue;
             for (int i = 0; i < images.Count; i++) {
                 Image<Bgr, byte> image = images[i];
-                double scale = FindBestScale(
-                    image, scaleMin, scaleMax, scaleStep, out Rectangle newCorners, out double score);
+                Image<Bgr, byte> imageReduced = image.Resize(reduceFactor, Inter.Linear);
+                double scale = FindBestScale(imageReduced, scaleMin * reduceFactor, scaleMax * reduceFactor,
+                    scaleStep * reduceFactor, out Rectangle newCorners, out double score) / reduceFactor;
                 if (score < bestScore) {
-                    corners = newCorners;
+                    corners = newCorners.Scale(1.0 / reduceFactor);
                     imageIndex = i;
                     bestScale = scale;
                     bestScore = score;
@@ -178,7 +180,7 @@ namespace SzachyAI {
                 scaleMax = scaleMin + scaleStep;
                 bestImage.ROI = Rectangle.Empty;
                 Rectangle newRoi = corners;
-                newRoi.Inflate(fieldSize);
+                newRoi.Inflate(fieldSize.Scale(0.5));
                 newRoi.Intersect(new Rectangle(Point.Empty, bestImage.Size));
                 bestImage.ROI = newRoi;
                 double scale = FindBestScale(

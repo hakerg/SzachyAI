@@ -37,5 +37,11 @@ namespace SzachyAI {
             this.color = color;
             this.moved = moved;
         }
+
+        public string Name => names[(int)type];
+        public string PolishName => polishNames[(int)type];
+        public string Symbol => symbols[(int)type];
+        public string PolishSymbol => polishSymbols[(int)type];
+        public int Score => scores[(int)type];
     }
 }

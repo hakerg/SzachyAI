@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace SzachyAI {
 
@@ -17,8 +19,9 @@ namespace SzachyAI {
         public Piece[,] board = new Piece[width, height];
         public List<Piece>[] pieces = new List<Piece>[] { new List<Piece>(maxPiecesPerColor), new List<Piece>(maxPiecesPerColor) };
         public Point[] kingsPos = new Point[(int)Color.Length];
-        public Piece fragilePiece;
-        public Point fragileField;
+        public Piece fragilePiece = null;
+        public Point fragileField = Point.Empty;
+        public int[] scores = new int[(int)Color.Length];
 
         public ref Piece PieceAt(Point pos) {
             return ref board[pos.X, pos.Y];
@@ -30,11 +33,13 @@ namespace SzachyAI {
             if (piece.type == Type.King) {
                 kingsPos[(int)piece.color] = piece.pos;
             }
+            scores[(int)piece.color] += piece.Score;
         }
 
         public void RemovePiece(Piece piece) {
             PieceAt(piece.pos) = null;
             pieces[(int)piece.color].Remove(piece);
+            scores[(int)piece.color] -= piece.Score;
         }
 
         public bool IsNearKing(Point kingPos, Point nearPos) {
@@ -116,42 +121,57 @@ namespace SzachyAI {
             piece.pos = to;
             piece.moved = true;
             PieceAt(piece.pos) = piece;
+            if (piece.type == Type.King) {
+                kingsPos[(int)piece.color] = piece.pos;
+            }
         }
 
         // TODO: castling
-        public GameState MakeMove(Move move, out int score) {
-            score = 0;
+        public GameState MakeMove(Move move) {
             GameState state = GameState.Playing;
+            Piece piece = move.piece;
+            Point to = move.to;
             // capture
-            Piece captured = PieceAt(move.to);
+            Piece captured = PieceAt(to);
             if (captured != null) {
                 if (captured.type == Type.King) {
                     state = GameState.Win;
                 }
                 RemovePiece(captured);
-                score += Piece.scores[(int)captured.type];
             }
             // capture by passing
-            if (fragilePiece != null && fragileField == move.to) {
+            if (fragilePiece != null && fragileField == to) {
                 RemovePiece(fragilePiece);
-                score += Piece.scores[(int)fragilePiece.type];
             }
-            int color = (int)move.piece.color;
-            if (move.piece.type == Type.Pawn &&
-                move.piece.pos.Y == MoveRule.pawnStartY[(int)move.piece.color] &&
-                move.to.Y == MoveRule.pawnTwoFieldY[color]) {
+            int color = (int)piece.color;
+            if (piece.type == Type.Pawn &&
+                piece.pos.Y == MoveRule.pawnStartY[color] &&
+                to.Y == MoveRule.pawnTwoFieldY[color]) {
                 // activate capture by passing for next move
-                fragileField.X = move.to.X;
+                fragileField.X = to.X;
                 fragileField.Y = MoveRule.pawnPassingY[color];
-                fragilePiece = move.piece;
+                fragilePiece = piece;
             } else {
                 fragilePiece = null;
             }
             // move
-            MovePiece(move.piece, move.to);
+            MovePiece(piece, to);
             // promotion
-            move.piece.type = move.changeTo;
+            if (piece.type != move.changeTo) {
+                scores[color] -= piece.Score;
+                piece.type = move.changeTo;
+                scores[color] += piece.Score;
+            }
             return state;
+        }
+
+        public float EstimateWinningProb(Color color) {
+            int sum = scores.Sum();
+            if (sum == 0) {
+                return 0.5F;
+            } else {
+                return (float)scores[(int)color] / sum;
+            }
         }
     }
 }

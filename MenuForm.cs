@@ -173,8 +173,6 @@ namespace SzachyAI
             int y1 = (int)(boardScreen.Bounds.Location.Y + corners.Y + (move.piece.pos.Y + 0.5F) * corners.Height / Board.height);
             int x2 = (int)(boardScreen.Bounds.Location.X + corners.X + (move.to.X + 0.5F) * corners.Width / Board.width);
             int y2 = (int)(boardScreen.Bounds.Location.Y + corners.Y + (move.to.Y + 0.5F) * corners.Height / Board.height);
-            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-            Thread.Sleep(Settings.eventTime);
             Cursor.Position = new Point(x1, y1);
             Thread.Sleep(Settings.eventTime);
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
@@ -205,8 +203,8 @@ namespace SzachyAI
                         boardScreenImage = screens[imageIndex];
                         boardScreen = Screen.AllScreens[imageIndex];
                         ValidateBorder();
-                        detectBoardOnce = false;
                     }
+                    detectBoardOnce = false;
                     UpdateStatus(Status.Ready);
                 }
 
