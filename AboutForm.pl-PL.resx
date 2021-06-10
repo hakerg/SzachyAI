@@ -119,7 +119,7 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>175, 143</value>
+    <value>176, 156</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
     <value>
@@ -129,6 +129,7 @@ Projekt uczelniany wykonany przez:
 Wiktor Krajewski
 Grzegorz Łabędzki
 
+Rozpoznawanie obrazów: Emgu CV
 Użyty silnik szachowy: Stockfish
 
 
