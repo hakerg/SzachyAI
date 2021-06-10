@@ -26,7 +26,8 @@ namespace SzachyAI
             borderCheckBox.Checked = Settings.showBorder;
             hintModeComboBox.SelectedIndex = (int)Settings.hintMode;
             mouseComboBox.SelectedIndex = (int)Settings.mouseMode;
-            timeNumericUpDown.Value = Settings.eventTime;
+            eventTimeNumericUpDown.Value = Settings.eventTime;
+            findTimeNumericUpDown.Value = Settings.findingTime;
         }
 
         public SettingsForm(MenuForm menuForm)
@@ -42,7 +43,7 @@ namespace SzachyAI
                 Controls.Clear();
                 InitializeComponent();
                 LoadSettings();
-                menuForm.ChangeLanguage(language);
+                menuForm.ChangeLanguage();
             }
         }
 
@@ -74,7 +75,11 @@ namespace SzachyAI
         }
 
         private void timeNumericUpDown_ValueChanged(object sender, EventArgs e) {
-            Settings.eventTime = (int)timeNumericUpDown.Value;
+            Settings.eventTime = (int)eventTimeNumericUpDown.Value;
+        }
+
+        private void findTimeNumericUpDown_ValueChanged(object sender, EventArgs e) {
+            Settings.findingTime = (int)findTimeNumericUpDown.Value;
         }
     }
 }

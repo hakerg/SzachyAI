@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -28,15 +29,10 @@ namespace SzachyAI
         {
             recognisedBoardPcBox.Visible = Settings.enableDebugMode;
             boardLabel.Visible = Settings.enableDebugMode;
-            if (Settings.enableDebugMode)
+            if (!Settings.enableDebugMode)
             {
-                this.Size = new Size(500, 500);
-                commandLabel.Location = new Point(32, 407);
-            }
-            else 
-            {
-                commandLabel.Location = new Point(32, 207);
-                this.Size = new Size(500, 300); 
+                Size = new Size(Width, Height - 200);
+                commandLabel.Location = new Point(commandLabel.Location.X, commandLabel.Location.Y - 200);
             }
         }
         private void scanButton_Click(object sender, EventArgs e)
@@ -45,7 +41,12 @@ namespace SzachyAI
         }
 
         public void StartBot() {
-            MessageBox.Show(this, "Press right mouse button to stop", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (Thread.CurrentThread.CurrentUICulture.Name == "pl-PL") {
+                MessageBox.Show(this, "Kliknij prawy przycisk myszy aby zatrzymać", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else {
+                MessageBox.Show(this, "Press right mouse button to stop", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
             menuForm.runBot = true;
             startButton.Text = "Stop";
         }

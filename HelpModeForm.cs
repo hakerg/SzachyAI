@@ -28,15 +28,9 @@ namespace SzachyAI
         {
             recognisedBoardPcBox.Visible = Settings.enableDebugMode;
             boardLabel.Visible = Settings.enableDebugMode;
-            if (Settings.enableDebugMode)
-            {
-                this.Size = new Size(500, 500);
-                commandLabel.Location = new Point(32, 407);
-            }
-            else
-            {
-                commandLabel.Location = new Point(32, 207);
-                this.Size = new Size(500, 300);
+            if (!Settings.enableDebugMode) {
+                Size = new Size(Width, Height - 200);
+                commandLabel.Location = new Point(commandLabel.Location.X, commandLabel.Location.Y - 200);
             }
         }
 

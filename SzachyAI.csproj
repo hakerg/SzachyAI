@@ -36,6 +36,9 @@
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Emgu.CV.Bitmap, Version=4.5.1.4349, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
       <HintPath>packages\Emgu.CV.Bitmap.4.5.1.4349\lib\netstandard2.0\Emgu.CV.Bitmap.dll</HintPath>
@@ -69,6 +72,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Speech" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -89,6 +93,7 @@
     </Compile>
     <Compile Include="Board.cs" />
     <Compile Include="BoardRecognizer.cs" />
+    <Compile Include="BoardView.cs" />
     <Compile Include="BotModeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,6 +132,13 @@
     <Compile Include="SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Stockfish.NET\Core\IStockfish.cs" />
+    <Compile Include="Stockfish.NET\Core\Stockfish.cs" />
+    <Compile Include="Stockfish.NET\Core\StockfishProcess.cs" />
+    <Compile Include="Stockfish.NET\Exceptions\MaxTriesException.cs" />
+    <Compile Include="Stockfish.NET\Models\Color.cs" />
+    <Compile Include="Stockfish.NET\Models\Evaluation.cs" />
+    <Compile Include="Stockfish.NET\Models\Settings.cs" />
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>

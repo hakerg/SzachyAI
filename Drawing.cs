@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SzachyAI {
@@ -46,7 +47,7 @@ namespace SzachyAI {
             }
         }
 
-        public void Draw(Screen screen, Rectangle corners, List<Move> moves = null) {
+        public void Draw(Screen screen, Rectangle corners, List<Move> moves, bool rotated) {
             Clear();
             Point screenLoc = screen.Bounds.Location;
             Location = new Point(corners.X + screenLoc.X - 2, corners.Y + screenLoc.Y - 2);
@@ -56,15 +57,25 @@ namespace SzachyAI {
             graphics.DrawRectangle(Pens.Red, 1, 1, corners.Width + 1, corners.Height + 1);
             if (moves != null) {
                 foreach (Move move in moves) {
-                    float x1 = 2 + (move.piece.pos.X + 0.5F) * corners.Width / Board.width;
-                    float y1 = 2 + (move.piece.pos.Y + 0.5F) * corners.Height / Board.height;
-                    float x2 = 2 + (move.to.X + 0.5F) * corners.Width / Board.width;
-                    float y2 = 2 + (move.to.Y + 0.5F) * corners.Height / Board.height;
+                    Point from = move.from;
+                    Point to = move.to;
+                    if (rotated) {
+                        from = from.ChessRotate180();
+                        to = to.ChessRotate180();
+                    }
+                    float x1 = 2 + (from.X + 0.5F) * corners.Width / Board.width;
+                    float y1 = 2 + (from.Y + 0.5F) * corners.Height / Board.height;
+                    float x2 = 2 + (to.X + 0.5F) * corners.Width / Board.width;
+                    float y2 = 2 + (to.Y + 0.5F) * corners.Height / Board.height;
                     Brush brush = GetBrush(move.winningProb);
                     graphics.DrawLine(new Pen(brush, 3), x1, y1, x2, y2);
                     graphics.FillEllipse(brush, x2 - 5, y2 - 5, 10, 10);
                 }
             }
+        }
+
+        public void Draw(Screen screen, Rectangle corners) {
+            Draw(screen, corners, null, false);
         }
     }
 }

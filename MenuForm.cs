@@ -2,12 +2,14 @@
 using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,22 +38,18 @@ namespace SzachyAI
         const int VK_LBUTTON = 0x01;
         const int VK_RBUTTON = 0x02;
 
-        public enum Status { Ready, DetectingCorners, DetectingPieces, FindingMove, SimulatingMove };
+        public enum Status { Ready, DetectingCorners, FindingMove };
 
         public List<string> englishStatus = new List<string> {
             "Ready",
             "Detecting chessboard corners",
-            "Detecting pieces",
-            "Finding move",
-            "Simulating mouse clicks"
+            "Finding move"
         };
 
         public List<string> polishStatus = new List<string> {
             "Gotowy",
             "Wykrywanie krawędzi planszy",
-            "Wykrywanie figur",
-            "Wyszukiwanie ruchu",
-            "Wykonywanie ruchu"
+            "Wyszukiwanie ruchu"
         };
 
         //Make "FormBorderStyle = None" form dragable
@@ -61,22 +59,22 @@ namespace SzachyAI
         private HelpModeForm helpModeForm;
         private BotModeForm botModeForm;
         public Drawing drawing;
-
         public bool cornersValid = false;
         public Screen boardScreen;
         public Rectangle corners;
         public Bitmap constructedImage;
         public string status;
-
+        public Board lastBoard;
         public bool runBot = false;
         public bool detectBoardOnce = false;
         public bool giveHintOnce = false;
-
         public BoardRecognizer recognizer = new BoardRecognizer();
-        public CultureInfo language = Thread.CurrentThread.CurrentUICulture;
+        public Random random = new Random();
+        public Thread creatorThread;
 
         public MenuForm()
         {
+            creatorThread = Thread.CurrentThread;
             InitializeComponent();
             drawing = new Drawing();
             drawing.Show();
@@ -129,8 +127,7 @@ namespace SzachyAI
             settingsForm.ShowDialog();
         }
 
-        public void ChangeLanguage(CultureInfo language) {
-            this.language = language;
+        public void ChangeLanguage() {
             Controls.Clear();
             InitializeComponent();
         }
@@ -141,13 +138,8 @@ namespace SzachyAI
             aboutForm.Show();
         }
 
-        private void UpdateStatus(Status statusEnum) {
+        private void UpdateStatus() {
             Invoke((Action)delegate {
-                if (language.Name == "pl-PL") {
-                    status = polishStatus[(int)statusEnum];
-                } else {
-                    status = englishStatus[(int)statusEnum];
-                }
                 if (helpModeForm != null && !helpModeForm.IsDisposed) {
                     helpModeForm.UpdateStatus();
                 }
@@ -157,22 +149,44 @@ namespace SzachyAI
             });
         }
 
+        private void UpdateStatus(Status statusEnum) {
+            Invoke((Action)delegate {
+                if (Thread.CurrentThread.CurrentUICulture.Name == "pl-PL") {
+                    status = polishStatus[(int)statusEnum];
+                } else {
+                    status = englishStatus[(int)statusEnum];
+                }
+            });
+            UpdateStatus();
+        }
+
         public void InvalidateBorder() {
             cornersValid = false;
+            constructedImage = null;
             Invoke((Action)delegate { drawing.Clear(); });
         }
 
-        public void ValidateBorder(List<Move> moves = null) {
+        public void ValidateBorder() {
             cornersValid = true;
-            Invoke((Action)delegate { drawing.Draw(boardScreen, corners, moves); });
+            Invoke((Action)delegate { drawing.Draw(boardScreen, corners); });
+        }
+
+        public void ValidateBorder(List<Move> moves) {
+            cornersValid = true;
+            Invoke((Action)delegate { drawing.Draw(boardScreen, corners, moves, lastBoard.rotated); });
         }
 
         public void SimulateMove(Move move) {
-            UpdateStatus(Status.SimulatingMove);
-            int x1 = (int)(boardScreen.Bounds.Location.X + corners.X + (move.piece.pos.X + 0.5F) * corners.Width / Board.width);
-            int y1 = (int)(boardScreen.Bounds.Location.Y + corners.Y + (move.piece.pos.Y + 0.5F) * corners.Height / Board.height);
-            int x2 = (int)(boardScreen.Bounds.Location.X + corners.X + (move.to.X + 0.5F) * corners.Width / Board.width);
-            int y2 = (int)(boardScreen.Bounds.Location.Y + corners.Y + (move.to.Y + 0.5F) * corners.Height / Board.height);
+            Point from = move.from;
+            Point to = move.to;
+            if (lastBoard.rotated) {
+                from = from.ChessRotate180();
+                to = to.ChessRotate180();
+            }
+            int x1 = (int)(boardScreen.Bounds.Location.X + corners.X + (from.X + 0.5F) * corners.Width / Board.width);
+            int y1 = (int)(boardScreen.Bounds.Location.Y + corners.Y + (from.Y + 0.5F) * corners.Height / Board.height);
+            int x2 = (int)(boardScreen.Bounds.Location.X + corners.X + (to.X + 0.5F) * corners.Width / Board.width);
+            int y2 = (int)(boardScreen.Bounds.Location.Y + corners.Y + (to.Y + 0.5F) * corners.Height / Board.height);
             Cursor.Position = new Point(x1, y1);
             Thread.Sleep(Settings.eventTime);
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
@@ -192,8 +206,16 @@ namespace SzachyAI
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
+            SpeechSynthesizer synth = new SpeechSynthesizer();
+            synth.SetOutputToDefaultAudioDevice();
             while (!backgroundWorker1.CancellationPending) {
+                if (Thread.CurrentThread.CurrentUICulture.Name != creatorThread.CurrentUICulture.Name) {
+                    Thread.CurrentThread.CurrentUICulture = creatorThread.CurrentUICulture;
+                    synth = new SpeechSynthesizer();
+                    synth.SetOutputToDefaultAudioDevice();
+                }
                 Image<Bgr, byte> boardScreenImage = null;
+                // detect corners
                 if (detectBoardOnce || (!cornersValid && (runBot || giveHintOnce))) {
                     InvalidateBorder();
                     UpdateStatus(Status.DetectingCorners);
@@ -208,6 +230,7 @@ namespace SzachyAI
                     UpdateStatus(Status.Ready);
                 }
 
+                // stop bot
                 if (GetAsyncKeyState(VK_RBUTTON) > 0) {
                     Invoke((Action)delegate {
                         if (botModeForm != null && !botModeForm.IsDisposed) {
@@ -216,8 +239,8 @@ namespace SzachyAI
                     });
                 }
 
+                // detect pieces
                 if (cornersValid && (giveHintOnce || runBot)) {
-                    UpdateStatus(Status.DetectingPieces);
                     if (boardScreenImage == null) {
                         ValidateBorder();
                         if (drawing.Bounds.Contains(Cursor.Position)) {
@@ -227,34 +250,61 @@ namespace SzachyAI
                         boardScreenImage = BoardRecognizer.CaptureScreen(boardScreen);
                     }
                     Image<Bgr, byte> boardImage = recognizer.GetScaledBoardImage(boardScreenImage, corners);
-                    if (recognizer.RecognizeBoard(boardImage, out Board board)) {
-                        constructedImage = recognizer.ConstructBoardImage(board).ToBitmap();
-                        List<Move> moves = new List<Move>();
-                        board.GetMoves(Color.White, moves);
-                        Move move = moves[0];
-                        if (giveHintOnce) {
-                            switch (Settings.hintMode) {
-                                case HintMode.DrawOnScreen:
-                                    ValidateBorder(new List<Move> { move });
-                                    break;
-                                case HintMode.WindowLabel:
-                                    // TODO
-                                    break;
-                                case HintMode.TextToSpeech:
-                                    // TODO
-                                    break;
-                            }
-                            giveHintOnce = false;
-                        } else if (runBot) {
-                            SimulateMove(move);
+                    if (recognizer.RecognizeBoard(boardImage, out BoardView boardView)) {
+                        constructedImage = recognizer.ConstructBoardImage(boardView).ToBitmap();
+
+                        if (lastBoard == null || !lastBoard.Update(boardView, 2)) {
+                            lastBoard = new Board(boardView);
                         }
-                    }
-                    else {
+
+                        // find move
+                        if (giveHintOnce || (runBot && lastBoard.nextPlayer == (lastBoard.rotated ? Color.Black : Color.White))) {
+                            UpdateStatus(Status.FindingMove);
+                            Move move = lastBoard.GetBestMove(Settings.findingTime * 1000);
+                            /*List<Move> moves = lastBoard.GetMovesWithProbs(DateTime.Now + TimeSpan.FromSeconds(Settings.findingTime));
+                            if (moves.Count > 0) {
+                                for (int i = 0; i < moves.Count() && moves.Count() > 1; i++) {
+                                    Move m = moves[i];
+                                    lastBoard.MakeMove(m);
+                                    foreach (BoardView view in prevBoards) {
+                                        if (lastBoard.Equals(view)) {
+                                            moves.RemoveAt(i);
+                                            i--;
+                                            break;
+                                        }
+                                    }
+                                    lastBoard.UndoMove(m);
+                                }
+                                Move move = moves[0];*/
+                            status = lastBoard.MoveShortString(move);
+                            UpdateStatus();
+                            if (giveHintOnce) {
+                                switch (Settings.hintMode) {
+                                    case HintMode.DrawOnScreen:
+                                        ValidateBorder(new List<Move> { move });
+                                        break;
+                                    case HintMode.TextToSpeech:
+                                        synth.Speak(lastBoard.MoveLongString(move));
+                                        break;
+                                }
+                            } else if (runBot) {
+                                SimulateMove(move);
+                                if (move.changeFrom != move.changeTo) {
+                                    Invoke((Action)delegate {
+                                        if (botModeForm != null && !botModeForm.IsDisposed) {
+                                            botModeForm.StopBot();
+                                        }
+                                    });
+                                }
+                            }
+                            //}
+                            giveHintOnce = false;
+                        }
+                    } else {
                         InvalidateBorder();
                     }
                 }
 
-                UpdateStatus(Status.Ready);
                 Thread.Sleep(100);
             }
         }

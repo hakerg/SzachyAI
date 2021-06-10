@@ -16,6 +16,7 @@ namespace SzachyAI
         public static bool showBorder = true;
         public static HintMode hintMode = HintMode.DrawOnScreen;
         public static MouseMode mouseMode = MouseMode.Draging;
-        public static int eventTime = 100;
+        public static int eventTime = 100; // ms
+        public static int findingTime = 3; // s
     }
 }

@@ -34,14 +34,14 @@ namespace SzachyAI {
             }
         }
 
-        public Image<Bgr, byte> ConstructBoardImage(Board board, Color backgroundColor = (Color)(-1)) {
+        public Image<Bgr, byte> ConstructBoardImage(BoardView board, Color backgroundColor = (Color)(-1)) {
             Image<Bgr, byte> image = new Image<Bgr, byte>(boardSize);
             for (int y = 0; y < Board.height; y++) {
                 for (int x = 0; x < Board.width; x++) {
                     int bc = backgroundColor == (Color)(-1) ? (x + y) % 2 : (int)backgroundColor;
                     Point start = new Point(x * fieldSize.Width, y * fieldSize.Height);
                     image.ROI = new Rectangle(start, fieldSize);
-                    Piece piece = board.PieceAt(new Point(x, y));
+                    Piece piece = board.board.At(new Point(x, y));
                     if (piece == null) {
                         templateFields[bc].CopyTo(image);
                     } else {
@@ -88,7 +88,7 @@ namespace SzachyAI {
             } else {
                 minScaleStep = 1.0 / boardSize.Height;
             }
-            emptyBoards[boardSize] = ConstructBoardImage(new Board());
+            emptyBoards[boardSize] = ConstructBoardImage(new BoardView());
             masks[boardSize] = CreateBoardMask();
         }
 
@@ -202,8 +202,8 @@ namespace SzachyAI {
             return boardImage.Resize(boardSize.Width, boardSize.Height, Inter.Lanczos4);
         }
 
-        public bool RecognizeBoard(Image<Bgr, byte> boardImage, out Board board) {
-            board = new Board();
+        public bool RecognizeBoard(Image<Bgr, byte> boardImage, out BoardView board) {
+            board = new BoardView();
             int allowedMistakes = 4;
             for (int y = 0; y < Board.height && allowedMistakes >= 0; y++) {
                 for (int x = 0; x < Board.width && allowedMistakes >= 0; x++) {
@@ -241,7 +241,7 @@ namespace SzachyAI {
                     }
                     if (bestPieceScore < fieldScore) {
                         Point pos = new Point(x, y);
-                        board.AddPiece(new Piece(pos, (Type)bestP, (Color)bestPC, false));
+                        board.AddPiece(new Piece(pos, (Type)bestP, (Color)bestPC));
                     }
                 }
             }

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace SzachyAI {
 
@@ -53,6 +54,48 @@ namespace SzachyAI {
         public static int[] pawnTwoFieldY = new int[] { 4, 3 };
 
         public static int[] pawnFinalY = new int[] { 0, 7 };
+
+        public static Point[] initKingPos = new Point[] { new Point(4, 7), new Point(4, 0) };
+
+        // [player][left / right]
+        public static Point[,] initRookPos = new Point[,] { {
+                new Point(0, 7),
+                new Point(7, 7)
+            }, {
+                new Point(0, 0),
+                new Point(7, 0)
+            }
+        };
+
+        // [player][left / right]
+        public static Point[,][] castleEmpty = new Point[,][] { {
+                new Point[] { new Point(1, 7), new Point(2, 7), new Point(3, 7) },
+                new Point[] { new Point(5, 7), new Point(6, 7) }
+            }, {
+                new Point[] { new Point(1, 0), new Point(2, 0), new Point(3, 0) },
+                new Point[] { new Point(5, 0), new Point(6, 0) }
+            }
+        };
+
+        // [player][left / right]
+        public static Point[,] kingPosAfterCastle = new Point[,] { {
+                new Point(2, 7),
+                new Point(6, 7)
+            }, {
+                new Point(2, 0),
+                new Point(6, 0)
+            }
+        };
+
+        // [player][left / right]
+        public static Point[,] rookPosAfterCastle = new Point[,] { {
+                new Point(3, 7),
+                new Point(5, 7)
+            }, {
+                new Point(3, 0),
+                new Point(5, 0)
+            }
+        };
 
         public static Type[] pawnChangeTypes = new Type[] {
             Type.Rook, Type.Knight, Type.Bishop, Type.Queen

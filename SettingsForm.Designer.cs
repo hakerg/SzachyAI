@@ -39,18 +39,21 @@ namespace SzachyAI
             this.mouseComboBox = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.timeNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)(this.timeNumericUpDown)).BeginInit();
+            this.eventTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
+            this.findTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.eventTimeNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.findTimeNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBox1
             // 
-            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             resources.GetString("comboBox1.Items"),
             resources.GetString("comboBox1.Items1")});
+            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -80,24 +83,24 @@ namespace SzachyAI
             // 
             // hintModeComboBox
             // 
-            resources.ApplyResources(this.hintModeComboBox, "hintModeComboBox");
             this.hintModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.hintModeComboBox.FormattingEnabled = true;
             this.hintModeComboBox.Items.AddRange(new object[] {
             resources.GetString("hintModeComboBox.Items"),
             resources.GetString("hintModeComboBox.Items1"),
             resources.GetString("hintModeComboBox.Items2")});
+            resources.ApplyResources(this.hintModeComboBox, "hintModeComboBox");
             this.hintModeComboBox.Name = "hintModeComboBox";
             this.hintModeComboBox.SelectedIndexChanged += new System.EventHandler(this.hintModeComboBox_SelectedIndexChanged);
             // 
             // mouseComboBox
             // 
-            resources.ApplyResources(this.mouseComboBox, "mouseComboBox");
             this.mouseComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.mouseComboBox.FormattingEnabled = true;
             this.mouseComboBox.Items.AddRange(new object[] {
             resources.GetString("mouseComboBox.Items"),
             resources.GetString("mouseComboBox.Items1")});
+            resources.ApplyResources(this.mouseComboBox, "mouseComboBox");
             this.mouseComboBox.Name = "mouseComboBox";
             this.mouseComboBox.SelectedIndexChanged += new System.EventHandler(this.mouseComboBox_SelectedIndexChanged);
             // 
@@ -111,27 +114,45 @@ namespace SzachyAI
             resources.ApplyResources(this.label4, "label4");
             this.label4.Name = "label4";
             // 
-            // timeNumericUpDown
+            // eventTimeNumericUpDown
             // 
-            resources.ApplyResources(this.timeNumericUpDown, "timeNumericUpDown");
-            this.timeNumericUpDown.Increment = new decimal(new int[] {
+            this.eventTimeNumericUpDown.Increment = new decimal(new int[] {
             100,
             0,
             0,
             0});
-            this.timeNumericUpDown.Maximum = new decimal(new int[] {
+            resources.ApplyResources(this.eventTimeNumericUpDown, "eventTimeNumericUpDown");
+            this.eventTimeNumericUpDown.Maximum = new decimal(new int[] {
             1000,
             0,
             0,
             0});
-            this.timeNumericUpDown.Name = "timeNumericUpDown";
-            this.timeNumericUpDown.ValueChanged += new System.EventHandler(this.timeNumericUpDown_ValueChanged);
+            this.eventTimeNumericUpDown.Name = "eventTimeNumericUpDown";
+            this.eventTimeNumericUpDown.ValueChanged += new System.EventHandler(this.timeNumericUpDown_ValueChanged);
+            // 
+            // label5
+            // 
+            resources.ApplyResources(this.label5, "label5");
+            this.label5.Name = "label5";
+            // 
+            // findTimeNumericUpDown
+            // 
+            resources.ApplyResources(this.findTimeNumericUpDown, "findTimeNumericUpDown");
+            this.findTimeNumericUpDown.Maximum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            0});
+            this.findTimeNumericUpDown.Name = "findTimeNumericUpDown";
+            this.findTimeNumericUpDown.ValueChanged += new System.EventHandler(this.findTimeNumericUpDown_ValueChanged);
             // 
             // SettingsForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.timeNumericUpDown);
+            this.Controls.Add(this.findTimeNumericUpDown);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.eventTimeNumericUpDown);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.mouseComboBox);
@@ -143,7 +164,8 @@ namespace SzachyAI
             this.Controls.Add(this.comboBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "SettingsForm";
-            ((System.ComponentModel.ISupportInitialize)(this.timeNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.eventTimeNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.findTimeNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -159,6 +181,8 @@ namespace SzachyAI
         private System.Windows.Forms.ComboBox mouseComboBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown timeNumericUpDown;
+        private System.Windows.Forms.NumericUpDown eventTimeNumericUpDown;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.NumericUpDown findTimeNumericUpDown;
     }
 }
