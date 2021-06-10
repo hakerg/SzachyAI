@@ -14,6 +14,6 @@ namespace Stockfish.NET
         string GetBestMove();
         string GetBestMoveTime(int time = 1000);
         bool IsMoveCorrect(string moveValue);
-        Evaluation GetEvaluation();
+        Evaluation GetEvaluation(int time = 10000);
     }
 }

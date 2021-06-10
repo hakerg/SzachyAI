@@ -427,6 +427,12 @@
         AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 </value>
   </data>
+  <data name="recognisedBoardPcBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>90, 104</value>
+  </data>
+  <data name="recognisedBoardPcBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>200, 200</value>
+  </data>
   <data name="boardLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>175, 17</value>
   </data>

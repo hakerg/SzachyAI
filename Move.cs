@@ -16,7 +16,6 @@ namespace SzachyAI {
         public Piece prevFragilePiece;
         public Point prevFragileField;
         public int prevHalfMoveClock;
-        public float winningProb;
 
         public Move(Piece piece, Point to, Piece capture, Piece prevFragilePiece, Point prevFragileField, int prevHalfMoveClock) {
             this.piece = piece;
@@ -28,7 +27,6 @@ namespace SzachyAI {
             this.prevFragilePiece = prevFragilePiece;
             this.prevFragileField = prevFragileField;
             this.prevHalfMoveClock = prevHalfMoveClock;
-            winningProb = 0.5F;
         }
 
         public Move(Piece piece, Point to, Piece capture, Type changeTo, Piece prevFragilePiece, Point prevFragileField, int prevHalfMoveClock) {
@@ -41,7 +39,6 @@ namespace SzachyAI {
             this.prevFragilePiece = prevFragilePiece;
             this.prevFragileField = prevFragileField;
             this.prevHalfMoveClock = prevHalfMoveClock;
-            winningProb = 0.5F;
         }
 
         public bool IsShortCastle => piece.type == Type.King && ((from.X == 4 && to.X == 6) || (from.X == 3 && to.X == 1));

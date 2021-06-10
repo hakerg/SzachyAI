@@ -342,18 +342,20 @@ namespace SzachyAI {
 
         public Move GetBestMove(int time) {
             stockfish.SetFenPosition(FenPosition);
-            Console.WriteLine("Evaluating: " + stockfish.GetFenPosition());
+            Console.WriteLine("Best move of: " + stockfish.GetFenPosition());
             string ret = stockfish.GetBestMoveTime(time);
             Console.WriteLine("Best move: " + ret);
-            Point from = GetPosFromString(ret.Substring(0, 2));
-            Point to = GetPosFromString(ret.Substring(2, 2));
-            Piece piece = board.At(from);
-            if (ret.Length == 4) {
-                return new Move(piece, to, GetAttackedPiece(to), fragilePiece, fragileField, halfMoveClock);
-            } else if (ret.Length == 5) {
-                foreach (Type type in MoveRule.pawnChangeTypes) {
-                    if (Piece.fen[(int)piece.color, (int)type][0] == ret[4]) {
-                        return new Move(piece, to, GetAttackedPiece(to), type, fragilePiece, fragileField, halfMoveClock);
+            if (ret != null) {
+                Point from = GetPosFromString(ret.Substring(0, 2));
+                Point to = GetPosFromString(ret.Substring(2, 2));
+                Piece piece = board.At(from);
+                if (ret.Length == 4) {
+                    return new Move(piece, to, GetAttackedPiece(to), fragilePiece, fragileField, halfMoveClock);
+                } else if (ret.Length == 5) {
+                    foreach (Type type in MoveRule.pawnChangeTypes) {
+                        if (Piece.fen[0, (int)type][0] == ret[4] || Piece.fen[1, (int)type][0] == ret[4]) {
+                            return new Move(piece, to, GetAttackedPiece(to), type, fragilePiece, fragileField, halfMoveClock);
+                        }
                     }
                 }
             }

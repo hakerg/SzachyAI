@@ -67,7 +67,7 @@ namespace SzachyAI {
                     float y1 = 2 + (from.Y + 0.5F) * corners.Height / Board.height;
                     float x2 = 2 + (to.X + 0.5F) * corners.Width / Board.width;
                     float y2 = 2 + (to.Y + 0.5F) * corners.Height / Board.height;
-                    Brush brush = GetBrush(move.winningProb);
+                    Brush brush = GetBrush(1.0F);
                     graphics.DrawLine(new Pen(brush, 3), x1, y1, x2, y2);
                     graphics.FillEllipse(brush, x2 - 5, y2 - 5, 10, 10);
                 }

@@ -42,10 +42,10 @@ namespace SzachyAI
 
         public void StartBot() {
             if (Thread.CurrentThread.CurrentUICulture.Name == "pl-PL") {
-                MessageBox.Show(this, "Kliknij prawy przycisk myszy aby zatrzymać", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, "Przytrzymaj prawy przycisk myszy aby zatrzymać", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else {
-                MessageBox.Show(this, "Press right mouse button to stop", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, "Press and hold right mouse button to stop", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             menuForm.runBot = true;
             startButton.Text = "Stop";

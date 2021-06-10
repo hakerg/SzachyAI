@@ -117,44 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="scanButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>21, 10</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="scanButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 2, 2, 2</value>
-  </data>
-  <data name="scanButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>150, 37</value>
-  </data>
   <data name="scanButton.Text" xml:space="preserve">
     <value>Wyszukaj planszę</value>
-  </data>
-  <data name="panel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 2, 2, 2</value>
-  </data>
-  <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>11, 406</value>
-  </data>
-  <data name="helpButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>202, 10</value>
-  </data>
-  <data name="helpButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 2, 2, 2</value>
-  </data>
-  <data name="helpButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>150, 37</value>
   </data>
   <data name="helpButton.Text" xml:space="preserve">
     <value>Pomóż mi!</value>
   </data>
-  <data name="commandLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>22, 331</value>
-  </data>
-  <data name="commandLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 0, 2, 0</value>
-  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="commandLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>88, 30</value>
   </data>
@@ -462,31 +431,16 @@
 </value>
   </data>
   <data name="recognisedBoardPcBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>94, 102</value>
-  </data>
-  <data name="recognisedBoardPcBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 2, 2, 2</value>
+    <value>90, 104</value>
   </data>
   <data name="recognisedBoardPcBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>188, 203</value>
-  </data>
-  <data name="boardLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>91, 83</value>
-  </data>
-  <data name="boardLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 0, 2, 0</value>
+    <value>200, 200</value>
   </data>
   <data name="boardLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>175, 17</value>
   </data>
   <data name="boardLabel.Text" xml:space="preserve">
     <value>Zrekonstruowana plansza:</value>
-  </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
-  </data>
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>362, 368</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

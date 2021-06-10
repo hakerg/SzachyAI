@@ -38,18 +38,24 @@ namespace SzachyAI
         const int VK_LBUTTON = 0x01;
         const int VK_RBUTTON = 0x02;
 
-        public enum Status { Ready, DetectingCorners, FindingMove };
+        public enum Status { Ready, DetectingCorners, FindingMove, BoardNotFound, MoveNotFound, BoardFound };
 
         public List<string> englishStatus = new List<string> {
             "Ready",
             "Detecting chessboard corners",
-            "Finding move"
+            "Finding move",
+            "Board not found",
+            "No valid move",
+            "Board found"
         };
 
         public List<string> polishStatus = new List<string> {
             "Gotowy",
             "Wykrywanie krawędzi planszy",
-            "Wyszukiwanie ruchu"
+            "Wyszukiwanie ruchu",
+            "Nie znaleziono planszy",
+            "Brak ruchu",
+            "Plansza wykryta"
         };
 
         //Make "FormBorderStyle = None" form dragable
@@ -225,9 +231,11 @@ namespace SzachyAI
                         boardScreenImage = screens[imageIndex];
                         boardScreen = Screen.AllScreens[imageIndex];
                         ValidateBorder();
+                        UpdateStatus(Status.BoardFound);
+                    } else {
+                        UpdateStatus(Status.BoardNotFound);
                     }
                     detectBoardOnce = false;
-                    UpdateStatus(Status.Ready);
                 }
 
                 // stop bot
@@ -276,34 +284,38 @@ namespace SzachyAI
                                     lastBoard.UndoMove(m);
                                 }
                                 Move move = moves[0];*/
-                            status = lastBoard.MoveShortString(move);
-                            UpdateStatus();
-                            if (giveHintOnce) {
-                                switch (Settings.hintMode) {
-                                    case HintMode.DrawOnScreen:
-                                        ValidateBorder(new List<Move> { move });
-                                        break;
-                                    case HintMode.TextToSpeech:
-                                        synth.Speak(lastBoard.MoveLongString(move));
-                                        break;
+                            if (move != null) {
+                                status = lastBoard.MoveShortString(move);
+                                UpdateStatus();
+                                if (giveHintOnce) {
+                                    switch (Settings.hintMode) {
+                                        case HintMode.DrawOnScreen:
+                                            ValidateBorder(new List<Move> { move });
+                                            break;
+                                        case HintMode.TextToSpeech:
+                                            synth.Speak(lastBoard.MoveLongString(move));
+                                            break;
+                                    }
+                                } else if (runBot) {
+                                    SimulateMove(move);
+                                    if (move.changeFrom != move.changeTo) {
+                                        Invoke((Action)delegate {
+                                            if (botModeForm != null && !botModeForm.IsDisposed) {
+                                                botModeForm.StopBot();
+                                            }
+                                        });
+                                    }
                                 }
-                            } else if (runBot) {
-                                SimulateMove(move);
-                                if (move.changeFrom != move.changeTo) {
-                                    Invoke((Action)delegate {
-                                        if (botModeForm != null && !botModeForm.IsDisposed) {
-                                            botModeForm.StopBot();
-                                        }
-                                    });
-                                }
+                            } else {
+                                UpdateStatus(Status.MoveNotFound);
                             }
-                            //}
-                            giveHintOnce = false;
                         }
                     } else {
                         InvalidateBorder();
+                        UpdateStatus(Status.BoardNotFound);
                     }
                 }
+                giveHintOnce = false;
 
                 Thread.Sleep(100);
             }

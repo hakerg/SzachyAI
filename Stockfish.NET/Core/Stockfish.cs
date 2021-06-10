@@ -381,7 +381,7 @@ namespace Stockfish.NET.Core
         /// </summary>
         /// <returns></returns>
         /// <exception cref="MaxTriesException"></exception>
-        public Evaluation GetEvaluation()
+        public Evaluation GetEvaluation(int time = 10000)
         {
             Evaluation evaluation = new Evaluation();
             var fen = GetFenPosition();
@@ -398,7 +398,7 @@ namespace Stockfish.NET.Core
 
             // I'm not sure this is the good way to handle evaluation of position, but why not?
             // Another way we need to somehow limit engine depth? 
-            goTime(10000);
+            goTime(time);
             var tries = 0;
             while (true)
             {
