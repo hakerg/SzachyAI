@@ -104,7 +104,7 @@ namespace Stockfish.NET.Core
         /// </summary>
         /// <param name="command"></param>
         /// <param name="estimatedTime"></param>
-        private void send(string command, int estimatedTime = 100)
+        private void send(string command, int estimatedTime = 10)
         {
             _stockfish.WriteLine(command);
             _stockfish.Wait(estimatedTime);

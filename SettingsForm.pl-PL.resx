@@ -190,6 +190,12 @@
   <data name="findTimeNumericUpDown.Location" type="System.Drawing.Point, System.Drawing">
     <value>203, 155</value>
   </data>
+  <data name="stockfishCheckBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>188, 17</value>
+  </data>
+  <data name="stockfishCheckBox.Text" xml:space="preserve">
+    <value>Użyj Stockfish do obliczania ruchu</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAQUEAAAEAIAA4RQAAFgAAACgAAABBAAAAggAAAAEAIAAAAAAABEIAAMMOAADDDgAAAAAAAAAA

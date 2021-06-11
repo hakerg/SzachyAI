@@ -268,22 +268,15 @@ namespace SzachyAI
                         // find move
                         if (giveHintOnce || (runBot && lastBoard.nextPlayer == (lastBoard.rotated ? Color.Black : Color.White))) {
                             UpdateStatus(Status.FindingMove);
-                            Move move = lastBoard.GetBestMove(Settings.findingTime * 1000);
-                            /*List<Move> moves = lastBoard.GetMovesWithProbs(DateTime.Now + TimeSpan.FromSeconds(Settings.findingTime));
-                            if (moves.Count > 0) {
-                                for (int i = 0; i < moves.Count() && moves.Count() > 1; i++) {
-                                    Move m = moves[i];
-                                    lastBoard.MakeMove(m);
-                                    foreach (BoardView view in prevBoards) {
-                                        if (lastBoard.Equals(view)) {
-                                            moves.RemoveAt(i);
-                                            i--;
-                                            break;
-                                        }
-                                    }
-                                    lastBoard.UndoMove(m);
+                            Move move;
+                            if (Settings.useStockfish) {
+                                move = lastBoard.GetStockfishMove(Settings.findingTime * 1000);
+                                if (move != null) {
+                                    move.winningProb = 1.0F;
                                 }
-                                Move move = moves[0];*/
+                            } else {
+                                move = lastBoard.GetBestMove(DateTime.Now + TimeSpan.FromSeconds(Settings.findingTime));
+                            }
                             if (move != null) {
                                 status = lastBoard.MoveShortString(move);
                                 UpdateStatus();

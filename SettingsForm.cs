@@ -28,6 +28,7 @@ namespace SzachyAI
             mouseComboBox.SelectedIndex = (int)Settings.mouseMode;
             eventTimeNumericUpDown.Value = Settings.eventTime;
             findTimeNumericUpDown.Value = Settings.findingTime;
+            stockfishCheckBox.Checked = Settings.useStockfish;
         }
 
         public SettingsForm(MenuForm menuForm)
@@ -80,6 +81,10 @@ namespace SzachyAI
 
         private void findTimeNumericUpDown_ValueChanged(object sender, EventArgs e) {
             Settings.findingTime = (int)findTimeNumericUpDown.Value;
+        }
+
+        private void stockfishCheckBox_CheckedChanged(object sender, EventArgs e) {
+            Settings.useStockfish = stockfishCheckBox.Checked;
         }
     }
 }

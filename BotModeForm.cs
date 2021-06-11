@@ -88,6 +88,7 @@ namespace SzachyAI
 
         private void BotModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            StopBot();
             menuForm.InvalidateBorder();
             menuForm.Show();
         }

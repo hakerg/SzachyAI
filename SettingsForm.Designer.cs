@@ -42,18 +42,19 @@ namespace SzachyAI
             this.eventTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.findTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.stockfishCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.eventTimeNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.findTimeNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBox1
             // 
+            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             resources.GetString("comboBox1.Items"),
             resources.GetString("comboBox1.Items1")});
-            resources.ApplyResources(this.comboBox1, "comboBox1");
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -83,24 +84,24 @@ namespace SzachyAI
             // 
             // hintModeComboBox
             // 
+            resources.ApplyResources(this.hintModeComboBox, "hintModeComboBox");
             this.hintModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.hintModeComboBox.FormattingEnabled = true;
             this.hintModeComboBox.Items.AddRange(new object[] {
             resources.GetString("hintModeComboBox.Items"),
             resources.GetString("hintModeComboBox.Items1"),
             resources.GetString("hintModeComboBox.Items2")});
-            resources.ApplyResources(this.hintModeComboBox, "hintModeComboBox");
             this.hintModeComboBox.Name = "hintModeComboBox";
             this.hintModeComboBox.SelectedIndexChanged += new System.EventHandler(this.hintModeComboBox_SelectedIndexChanged);
             // 
             // mouseComboBox
             // 
+            resources.ApplyResources(this.mouseComboBox, "mouseComboBox");
             this.mouseComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.mouseComboBox.FormattingEnabled = true;
             this.mouseComboBox.Items.AddRange(new object[] {
             resources.GetString("mouseComboBox.Items"),
             resources.GetString("mouseComboBox.Items1")});
-            resources.ApplyResources(this.mouseComboBox, "mouseComboBox");
             this.mouseComboBox.Name = "mouseComboBox";
             this.mouseComboBox.SelectedIndexChanged += new System.EventHandler(this.mouseComboBox_SelectedIndexChanged);
             // 
@@ -116,12 +117,12 @@ namespace SzachyAI
             // 
             // eventTimeNumericUpDown
             // 
+            resources.ApplyResources(this.eventTimeNumericUpDown, "eventTimeNumericUpDown");
             this.eventTimeNumericUpDown.Increment = new decimal(new int[] {
             100,
             0,
             0,
             0});
-            resources.ApplyResources(this.eventTimeNumericUpDown, "eventTimeNumericUpDown");
             this.eventTimeNumericUpDown.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -146,10 +147,18 @@ namespace SzachyAI
             this.findTimeNumericUpDown.Name = "findTimeNumericUpDown";
             this.findTimeNumericUpDown.ValueChanged += new System.EventHandler(this.findTimeNumericUpDown_ValueChanged);
             // 
+            // stockfishCheckBox
+            // 
+            resources.ApplyResources(this.stockfishCheckBox, "stockfishCheckBox");
+            this.stockfishCheckBox.Name = "stockfishCheckBox";
+            this.stockfishCheckBox.UseVisualStyleBackColor = true;
+            this.stockfishCheckBox.CheckedChanged += new System.EventHandler(this.stockfishCheckBox_CheckedChanged);
+            // 
             // SettingsForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.stockfishCheckBox);
             this.Controls.Add(this.findTimeNumericUpDown);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.eventTimeNumericUpDown);
@@ -184,5 +193,6 @@ namespace SzachyAI
         private System.Windows.Forms.NumericUpDown eventTimeNumericUpDown;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown findTimeNumericUpDown;
+        private System.Windows.Forms.CheckBox stockfishCheckBox;
     }
 }

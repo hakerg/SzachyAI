@@ -16,6 +16,7 @@ namespace SzachyAI {
         public Piece prevFragilePiece;
         public Point prevFragileField;
         public int prevHalfMoveClock;
+        public float winningProb = 0.5F;
 
         public Move(Piece piece, Point to, Piece capture, Piece prevFragilePiece, Point prevFragileField, int prevHalfMoveClock) {
             this.piece = piece;
@@ -49,7 +50,7 @@ namespace SzachyAI {
             get {
                 string ret = from.ToChessString() + to.ToChessString();
                 if (changeFrom != changeTo) {
-                    ret += Piece.fen[(int)piece.color, (int)changeTo];
+                    ret += Piece.fen[1, (int)changeTo];
                 }
                 return ret;
             }

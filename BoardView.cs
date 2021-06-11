@@ -17,15 +17,26 @@ namespace SzachyAI {
         // black pawn goes positive y
         // white pawn goes negative y
         public Piece[,] board = new Piece[width, height];
+        public int[] score = new int[(int)Color.Length];
 
         public void AddPiece(Piece piece) {
             board.At(piece.pos) = piece;
+            score[(int)piece.color] += piece.Score;
         }
 
+        public void RemovePiece(Point where) {
+            ref Piece piece = ref board.At(where);
+            score[(int)piece.color] -= piece.Score;
+            piece = null;
+        }
+
+        // make sure target is empty
         public void MovePiece(Piece piece, Point to) {
+            score[(int)piece.color] -= piece.Score;
             board.At(piece.pos) = null;
             piece.pos = to;
-            board.At(piece.pos) = piece;
+            board.At(to) = piece;
+            score[(int)piece.color] += piece.Score;
         }
 
         public bool Equals(BoardView other) {
@@ -40,16 +51,6 @@ namespace SzachyAI {
                 }
             }
             return true;
-        }
-
-        public BoardView Clone() {
-            BoardView ret = new BoardView();
-            foreach (Piece piece in board) {
-                if (piece != null) {
-                    ret.AddPiece(piece.Clone());
-                }
-            }
-            return ret;
         }
 
         public BoardView Rotate180() {
