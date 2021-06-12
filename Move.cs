@@ -17,6 +17,7 @@ namespace SzachyAI {
         public Point prevFragileField;
         public int prevHalfMoveClock;
         public int score = 0;
+        public int depth = -1;
 
         public Move(Piece piece, Point to, Piece capture, Piece prevFragilePiece, Point prevFragileField, int prevHalfMoveClock) {
             this.piece = piece;

@@ -59,7 +59,7 @@ namespace SzachyAI {
             }
         }
 
-        public bool IsCastlingPossible(Color player, int side) {
+        public bool IsCastlingAvailable(Color player, int side) {
             Piece atKingPos = board.At(MoveRule.initKingPos[(int)player]);
             if (atKingPos != null && atKingPos.type == Type.King && atKingPos.color == player && atKingPos.moveCount == 0) {
                 Piece atRookPos = board.At(MoveRule.initRookPos[(int)player, side]);
@@ -78,11 +78,44 @@ namespace SzachyAI {
             return attackedPiece;
         }
 
+        public bool[,] GetAttackedFields(Color attacker) {
+            bool[,] fields = new bool[width, height];
+            List<Move> moves = GetMovesInaccurate(attacker, false);
+            foreach (Move move in moves) {
+                fields.At(move.to) = true;
+            }
+            return fields;
+        }
+
         public List<Move> GetMovesInaccurate() {
             return GetMovesInaccurate(nextPlayer);
         }
 
-        public List<Move> GetMovesInaccurate(Color nextPlayer) {
+        public bool CanMakeCastle(Color nextPlayer, int side, ref bool[,] attacked) {
+            if (IsCastlingAvailable(nextPlayer, side)) {
+                foreach (Point point in MoveRule.castleEmpty[(int)nextPlayer, side]) {
+                    if (board.At(point) != null) {
+                        return false;
+                    }
+                }
+                if (attacked == null) {
+                    attacked = GetAttackedFields(Chess.Opponent(nextPlayer));
+                }
+                if (attacked.At(MoveRule.initKingPos[(int)nextPlayer]) ||
+                    attacked.At(MoveRule.initRookPos[(int)nextPlayer, side])) {
+                    return false;
+                }
+                foreach (Point point in MoveRule.castleEmpty[(int)nextPlayer, side]) {
+                    if (attacked.At(point)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public List<Move> GetMovesInaccurate(Color nextPlayer, bool castling = true) {
             List<Move> nextMoves = new List<Move>();
             foreach (Piece piece in board) {
                 if (piece != null && piece.color == nextPlayer) {
@@ -138,22 +171,20 @@ namespace SzachyAI {
                     }
                 }
             }
-            for (int side = 0; side < 2; side++) {
-                if (IsCastlingPossible(nextPlayer, side)) {
-                    bool clear = true;
-                    foreach (Point point in MoveRule.castleEmpty[(int)nextPlayer, side]) {
-                        if (board.At(point) != null) {
-                            clear = false;
-                            break;
-                        }
-                    }
-                    if (clear) {
+            // castling
+            if (castling) {
+                bool[,] attacked = null;
+                for (int side = 0; side < 2; side++) {
+                    if (CanMakeCastle(nextPlayer, side, ref attacked)) {
                         nextMoves.Add(new Move(
                             board.At(MoveRule.initKingPos[(int)nextPlayer]),
                             MoveRule.kingPosAfterCastle[(int)nextPlayer, side],
                             null, fragilePiece, fragileField, halfMoveClock));
                     }
                 }
+            }
+            if (nextPlayer == Color.Black) {
+                nextMoves.Reverse();
             }
             return nextMoves;
         }
@@ -298,10 +329,10 @@ namespace SzachyAI {
                 }
 
                 string castling = "";
-                if (IsCastlingPossible(Color.White, 1)) castling += "K";
-                if (IsCastlingPossible(Color.White, 0)) castling += "Q";
-                if (IsCastlingPossible(Color.Black, 1)) castling += "k";
-                if (IsCastlingPossible(Color.Black, 0)) castling += "q";
+                if (IsCastlingAvailable(Color.White, 1)) castling += "K";
+                if (IsCastlingAvailable(Color.White, 0)) castling += "Q";
+                if (IsCastlingAvailable(Color.Black, 1)) castling += "k";
+                if (IsCastlingAvailable(Color.Black, 0)) castling += "q";
                 if (castling.Length == 0) {
                     castling = "-";
                 }
@@ -391,60 +422,70 @@ namespace SzachyAI {
 
         // TODO: not enough material
 
+        public void CalculateMoveScore(Move move) {
+            Color player = nextPlayer;
+            MakeMove(move);
+            if (IsLastMoveStalemate()) {
+                move.score = 0;
+            } else if (repeatedFens.TryGetValue(FenPositionNoClocks, out int count) && count >= 1) { // 2 repeats end game faster
+                move.score = 0;
+            } else {
+                move.score = AlphaBeta(player, move.depth);
+            }
+            UndoMove(move);
+            Console.WriteLine(move.StockfishString + ", depth " + (move.depth + 1) + ": " + move.score + " cp");
+        }
+
         public Move GetBestMove(DateTime timeout) {
             List<Move> moves = GetMovesInaccurate();
-            Dictionary<Move, int> notBestSince = new Dictionary<Move, int>();
-            foreach (Move move in moves) {
-                notBestSince.Add(move, 0);
+            if (moves.Count == 1) {
+                return moves[0];
             }
-            int depth = 0;
-            Color player = nextPlayer;
-            Console.WriteLine("\nGet moves for " + Chess.colorNames[(int)player]);
-            while (DateTime.Now < timeout && moves.Count > 1) {
-                Console.WriteLine("\nDepth: " + depth);
-                float best = float.MinValue;
-                for (int i = 0; i < moves.Count; i++) {
-                    Move move = moves[i];
-                    MakeMove(move);
-                    if (IsLastMoveStalemate()) {
-                        move.score = 0;
-                    } else if (repeatedFens.TryGetValue(FenPositionNoClocks, out int count) && count >= 1) { // 2 repeats cause draw to make game faster
-                        move.score = 0;
-                    } else {
-                        move.score = AlphaBeta(player, depth);
-                    }
-                    UndoMove(move);
-                    Console.WriteLine(MoveShortString(move) + " - " + MoveLongString(move) + ": " + move.score + " cp");
-                    if (move.score == 100000) {
-                        return move;
-                    }
-                    best = Math.Max(best, move.score);
+            if (moves.Count > 1) {
+                Console.WriteLine("\nEvaluate moves for " + Chess.colorNames[(int)nextPlayer]);
+                Dictionary<Move, int> notBestSince = new Dictionary<Move, int>();
+                foreach (Move move in moves) {
+                    notBestSince.Add(move, 0);
                 }
-                moves.Sort((a, b) => b.score.CompareTo(a.score));
-                for (int i = moves.Count - 1; i >= 0 && moves.Count > 1; i--) {
-                    Move move = moves[i];
-                    if (move.score >= best) {
-                        notBestSince[move] = 0;
-                    } else {
-                        notBestSince[move]++;
-                        if (notBestSince[move] >= 4) {
-                            moves.RemoveAt(i);
+                while (DateTime.Now < timeout) {
+                    int best = int.MinValue;
+                    foreach (Move move in moves) {
+                        if (notBestSince[move] < 4) {
+                            move.depth++;
+                            CalculateMoveScore(move);
+                            if (move.score == 100000) {
+                                return move;
+                            } else if (move.score == -100000) {
+                                notBestSince[move] = 4;
+                            }
+                            best = Math.Max(best, move.score);
                         }
                     }
+                    int checkCount = 0;
+                    foreach (Move move in moves) {
+                        if (move.score >= best) {
+                            notBestSince[move] = 0;
+                        } else {
+                            notBestSince[move]++;
+                        }
+                        if (notBestSince[move] < 4) {
+                            checkCount++;
+                        }
+                    }
+                    if (checkCount <= 1) {
+                        break;
+                    }
                 }
-                depth++;
-            }
-            if (moves.Count > 0) {
+                moves.Sort((a, b) => b.score.CompareTo(a.score));
                 return moves[0];
-            } else {
-                return null;
             }
+            return null;
         }
 
         public bool IsLastMoveCheck() {
             List<Move> moves = GetMovesInaccurate(Chess.Opponent(nextPlayer));
-            foreach (Move move2 in moves) {
-                Piece to = board.At(move2.to);
+            foreach (Move move in moves) {
+                Piece to = board.At(move.to);
                 if (to != null && to.type == Type.King) {
                     return true;
                 }
@@ -454,18 +495,18 @@ namespace SzachyAI {
 
         public bool IsLastMoveMate() {
             List<Move> moves = GetMovesInaccurate();
-            foreach (Move move2 in moves) {
-                MakeMove(move2);
+            foreach (Move move in moves) {
+                MakeMove(move);
                 List<Move> moves2 = GetMovesInaccurate();
                 bool killed = false;
-                foreach (Move move3 in moves2) {
-                    Piece to = board.At(move3.to);
+                foreach (Move move2 in moves2) {
+                    Piece to = board.At(move2.to);
                     if (to != null && to.type == Type.King) {
                         killed = true;
                         break;
                     }
                 }
-                UndoMove(move2);
+                UndoMove(move);
                 if (!killed) {
                     return false;
                 }

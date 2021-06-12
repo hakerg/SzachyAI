@@ -17,7 +17,7 @@ namespace SzachyAI
         public static HintMode hintMode = HintMode.DrawOnScreen;
         public static MouseMode mouseMode = MouseMode.Draging;
         public static int eventTime = 100; // ms
-        public static int findingTime = 3; // s
+        public static int findingTime = 2; // s
         public static bool useStockfish = true;
     }
 }
