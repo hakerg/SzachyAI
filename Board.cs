@@ -45,6 +45,9 @@ namespace SzachyAI {
                 nextPlayer = Color.Black;
                 rotated = true;
             }
+            if (FenLayout.Equals(initLayout)) {
+                nextPlayer = Color.White;
+            }
             repeatedFens.AddOrUpdate(FenPositionNoClocks, 1, (_, count) => count + 1);
         }
 
@@ -299,29 +302,8 @@ namespace SzachyAI {
 
         public string FenPositionNoClocks {
             get {
-                string ret = "";
-                for (int y = 0; y != height; y++) {
-                    int emptyCount = 0;
-                    for (int x = 0; x != width; x++) {
-                        Point point = new Point(x, y);
-                        Piece piece = board.At(point);
-                        if (piece == null) {
-                            emptyCount++;
-                        } else {
-                            if (emptyCount > 0) {
-                                ret += emptyCount;
-                                emptyCount = 0;
-                            }
-                            ret += piece.Fen;
-                        }
-                    }
-                    if (emptyCount > 0) {
-                        ret += emptyCount;
-                    }
-                    if (y + 1 != height) {
-                        ret += "/";
-                    }
-                }
+                string ret = FenLayout;
+
                 if (nextPlayer == Color.White) {
                     ret += " w";
                 } else {

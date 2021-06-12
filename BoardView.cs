@@ -62,5 +62,36 @@ namespace SzachyAI {
             }
             return ret;
         }
+
+        public static string initLayout = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+
+        public string FenLayout {
+            get {
+                string ret = "";
+                for (int y = 0; y != height; y++) {
+                    int emptyCount = 0;
+                    for (int x = 0; x != width; x++) {
+                        Point point = new Point(x, y);
+                        Piece piece = board.At(point);
+                        if (piece == null) {
+                            emptyCount++;
+                        } else {
+                            if (emptyCount > 0) {
+                                ret += emptyCount;
+                                emptyCount = 0;
+                            }
+                            ret += piece.Fen;
+                        }
+                    }
+                    if (emptyCount > 0) {
+                        ret += emptyCount;
+                    }
+                    if (y + 1 != height) {
+                        ret += "/";
+                    }
+                }
+                return ret;
+            }
+        }
     }
 }
