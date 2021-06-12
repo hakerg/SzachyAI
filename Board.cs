@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -18,6 +19,7 @@ namespace SzachyAI {
         public int halfMoveClock = 0;
         public int fullMoveNumber = 1;
         public GameState gameState = GameState.Playing;
+        public ConcurrentDictionary<string, int> repeatedFens = new ConcurrentDictionary<string, int>();
 
         public Board(BoardView boardView) {
             int[] piecesTop = new int[(int)Color.Length];
@@ -33,6 +35,7 @@ namespace SzachyAI {
             }
             int whiteAtBottomVotes = piecesTop[(int)Color.Black] + piecesBottom[(int)Color.White];
             int blackAtBottomVotes = piecesTop[(int)Color.White] + piecesBottom[(int)Color.Black];
+            score = boardView.score;
             if (whiteAtBottomVotes >= blackAtBottomVotes) {
                 board = boardView.board;
                 nextPlayer = Color.White;
@@ -42,6 +45,7 @@ namespace SzachyAI {
                 nextPlayer = Color.Black;
                 rotated = true;
             }
+            repeatedFens.AddOrUpdate(FenPositionNoClocks, 1, (_, count) => count + 1);
         }
 
         public void AddPawnMoveWithChangeTo(List<Move> nextMoves, Piece piece, Point to, Piece capture) {
@@ -243,7 +247,26 @@ namespace SzachyAI {
             }
         }
 
-        public string FenPosition {
+        public bool Update(BoardView boardView, int maxMoves) {
+            if (rotated ? Equals(boardView.Rotate180()) : Equals(boardView)) {
+                return true;
+            } else if (maxMoves > 0) {
+                maxMoves--;
+                List<Move> moves = GetMovesInaccurate();
+                foreach (Move move in moves) {
+                    MakeMove(move);
+                    string fen = FenPositionNoClocks;
+                    if (Update(boardView, maxMoves)) {
+                        repeatedFens.AddOrUpdate(fen, 1, (_, count) => count + 1);
+                        return true;
+                    }
+                    UndoMove(move);
+                }
+            }
+            return false;
+        }
+
+        public string FenPositionNoClocks {
             get {
                 string ret = "";
                 for (int y = 0; y != height; y++) {
@@ -290,10 +313,11 @@ namespace SzachyAI {
                     ret += " -";
                 }
 
-                ret += " " + halfMoveClock + " " + fullMoveNumber;
                 return ret;
             }
         }
+
+        public string FenPosition => FenPositionNoClocks + " " + halfMoveClock + " " + fullMoveNumber;
 
         public Point GetPosFromString(string pos) {
             for (int x = 0; x < width; x++) {
@@ -330,14 +354,14 @@ namespace SzachyAI {
             return null;
         }
 
-        public float AlphaBeta(Color player, int depth, float alpha = float.MinValue, float beta = float.MaxValue) {
+        public int AlphaBeta(Color player, int depth, int alpha = int.MinValue, int beta = int.MaxValue) {
             if (gameState == GameState.Win) {
-                return nextPlayer == player ? 0.0F : 1.0F;
+                return nextPlayer == player ? -100000 : 100000;
             } else if (gameState == GameState.Draw) {
-                return 0.5F;
+                return 0;
             }
             else if (depth == 0) {
-                return 1.0F / (1.0F + (float)Math.Exp((score[(int)player] - score[(int)Chess.Opponent(player)]) * -0.003));
+                return score[(int)player] - score[(int)Chess.Opponent(player)];
             } else {
                 depth--;
                 List<Move> moves = GetMovesInaccurate();
@@ -365,16 +389,10 @@ namespace SzachyAI {
             }
         }
 
-        // TODO: stalemate
         // TODO: not enough material
-        // TODO: repeated pos
 
         public Move GetBestMove(DateTime timeout) {
             List<Move> moves = GetMovesInaccurate();
-            //moves.RemoveAll(move => {
-            //    stockfish.SetFenPosition(FenPosition);
-            //    return !stockfish.IsMoveCorrect(move.StockfishString);
-            //});
             Dictionary<Move, int> notBestSince = new Dictionary<Move, int>();
             foreach (Move move in moves) {
                 notBestSince.Add(move, 0);
@@ -388,31 +406,33 @@ namespace SzachyAI {
                 for (int i = 0; i < moves.Count; i++) {
                     Move move = moves[i];
                     MakeMove(move);
-                    move.winningProb = AlphaBeta(player, depth);
+                    if (IsLastMoveStalemate()) {
+                        move.score = 0;
+                    } else if (repeatedFens.TryGetValue(FenPositionNoClocks, out int count) && count >= 1) { // 2 repeats cause draw to make game faster
+                        move.score = 0;
+                    } else {
+                        move.score = AlphaBeta(player, depth);
+                    }
                     UndoMove(move);
-                    Console.WriteLine(MoveShortString(move) + " - " + MoveLongString(move) + ": " + move.winningProb);
-                    if (move.winningProb == 1.0F) {
+                    Console.WriteLine(MoveShortString(move) + " - " + MoveLongString(move) + ": " + move.score + " cp");
+                    if (move.score == 100000) {
                         return move;
                     }
-                    best = Math.Max(best, move.winningProb);
+                    best = Math.Max(best, move.score);
                 }
-                for (int i = 0; i < moves.Count && moves.Count > 1; i++) {
+                moves.Sort((a, b) => b.score.CompareTo(a.score));
+                for (int i = moves.Count - 1; i >= 0 && moves.Count > 1; i--) {
                     Move move = moves[i];
-                    if (move.winningProb < best) {
+                    if (move.score >= best) {
+                        notBestSince[move] = 0;
+                    } else {
                         notBestSince[move]++;
                         if (notBestSince[move] >= 4) {
                             moves.RemoveAt(i);
-                            i--;
                         }
-                    } else {
-                        notBestSince[move] = 0;
                     }
                 }
-                moves.Sort((a, b) => b.winningProb.CompareTo(a.winningProb));
                 depth++;
-                if (best == 1.0F) {
-                    break;
-                }
             }
             if (moves.Count > 0) {
                 return moves[0];
@@ -421,24 +441,18 @@ namespace SzachyAI {
             }
         }
 
-        public bool IsCheck(Move move) {
-            bool isCheck = false;
-            MakeMove(move);
+        public bool IsLastMoveCheck() {
             List<Move> moves = GetMovesInaccurate(Chess.Opponent(nextPlayer));
             foreach (Move move2 in moves) {
                 Piece to = board.At(move2.to);
                 if (to != null && to.type == Type.King) {
-                    isCheck = true;
-                    break;
+                    return true;
                 }
             }
-            UndoMove(move);
-            return isCheck;
+            return false;
         }
 
-        public bool IsMate(Move move) {
-            bool isMate = true;
-            MakeMove(move);
+        public bool IsLastMoveMate() {
             List<Move> moves = GetMovesInaccurate();
             foreach (Move move2 in moves) {
                 MakeMove(move2);
@@ -453,30 +467,14 @@ namespace SzachyAI {
                 }
                 UndoMove(move2);
                 if (!killed) {
-                    isMate = false;
-                    break;
+                    return false;
                 }
             }
-            UndoMove(move);
-            return isMate;
+            return true;
         }
 
-        public bool Update(BoardView boardView, int maxMoves) {
-            if (rotated ? Equals(boardView.Rotate180()) : Equals(boardView)) {
-                return true;
-            }
-            else if (maxMoves > 0) {
-                maxMoves--;
-                List<Move> moves = GetMovesInaccurate();
-                foreach (Move move in moves) {
-                    MakeMove(move);
-                    if (Update(boardView, maxMoves)) {
-                        return true;
-                    }
-                    UndoMove(move);
-                }
-            }
-            return false;
+        public bool IsLastMoveStalemate() {
+            return !IsLastMoveCheck() && IsLastMoveMate();
         }
 
         public string MoveShortString(Move move) {
@@ -532,13 +530,15 @@ namespace SzachyAI {
                     }
                 }
             }
-            if (IsCheck(move)) {
-                if (IsMate(move)) {
+            MakeMove(move);
+            if (IsLastMoveCheck()) {
+                if (IsLastMoveMate()) {
                     ret += "#";
                 } else {
                     ret += "+";
                 }
             }
+            UndoMove(move);
             return ret;
         }
 
@@ -575,13 +575,15 @@ namespace SzachyAI {
                         ret += " i promuje do " + Piece.polishPromotionNames[(int)move.changeTo];
                     }
                 }
-                if (IsCheck(move)) {
-                    if (IsMate(move)) {
+                MakeMove(move);
+                if (IsLastMoveCheck()) {
+                    if (IsLastMoveMate()) {
                         ret += ", szach mat";
                     } else {
                         ret += ", szach";
                     }
                 }
+                UndoMove(move);
             } else {
                 if (move.IsShortCastle) {
                     ret += "kingside castle";
@@ -605,13 +607,15 @@ namespace SzachyAI {
                         ret += " and promotes to the " + Piece.names[(int)move.changeTo];
                     }
                 }
-                if (IsCheck(move)) {
-                    if (IsMate(move)) {
+                MakeMove(move);
+                if (IsLastMoveCheck()) {
+                    if (IsLastMoveMate()) {
                         ret += ", checkmate";
                     } else {
                         ret += ", check";
                     }
                 }
+                UndoMove(move);
             }
             return ret;
         }

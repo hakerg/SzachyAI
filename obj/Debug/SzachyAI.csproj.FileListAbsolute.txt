@@ -30,3 +30,4 @@ C:\Users\grzeg\source\repos\SzachyAI\obj\Debug\SzachyAI.MenuForm.pl-PL.resources
 C:\Users\grzeg\source\repos\SzachyAI\obj\Debug\SzachyAI.SettingsForm.pl-PL.resources
 C:\Users\grzeg\source\repos\SzachyAI\obj\Debug\pl-PL\SzachyAI.resources.dll
 C:\Users\grzeg\source\repos\SzachyAI\obj\Debug\en\SzachyAI.resources.dll
+C:\Users\grzeg\source\repos\SzachyAI\obj\Debug\SzachyAI.AboutForm.pl-PL.resources

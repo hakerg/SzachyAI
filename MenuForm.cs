@@ -272,7 +272,7 @@ namespace SzachyAI
                             if (Settings.useStockfish) {
                                 move = lastBoard.GetStockfishMove(Settings.findingTime * 1000);
                                 if (move != null) {
-                                    move.winningProb = 1.0F;
+                                    move.score = 100000;
                                 }
                             } else {
                                 move = lastBoard.GetBestMove(DateTime.Now + TimeSpan.FromSeconds(Settings.findingTime));
