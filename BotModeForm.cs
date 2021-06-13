@@ -42,7 +42,7 @@ namespace SzachyAI
 
         public void StartBot() {
             if (Thread.CurrentThread.CurrentUICulture.Name == "pl-PL") {
-                MessageBox.Show(this, "Przytrzymaj prawy przycisk myszy aby zatrzymać", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, "Kliknij i przytrzymaj prawy przycisk myszy aby zatrzymać", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else {
                 MessageBox.Show(this, "Press and hold right mouse button to stop", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -89,7 +89,7 @@ namespace SzachyAI
         private void BotModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             StopBot();
-            menuForm.InvalidateBorder();
+            Invoke((Action)delegate { menuForm.drawing.Clear(); });
             menuForm.Show();
         }
 
@@ -110,10 +110,13 @@ namespace SzachyAI
             notifyIcon1.Visible = false;
         }
 
-        public void UpdateStatus() {
-            commandLabel.Text = menuForm.status;
-            notifyIcon1.Text = "ChessAI: " + menuForm.status;
-            recognisedBoardPcBox.Image = menuForm.constructedImage;
+        public void UpdateStatus(string status) {
+            commandLabel.Text = status;
+            notifyIcon1.Text = "ChessAI: " + status;
+        }
+
+        public void UpdateImage(Bitmap image) {
+            recognisedBoardPcBox.Image = image;
         }
     }
 }

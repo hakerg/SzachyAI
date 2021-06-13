@@ -11,6 +11,7 @@ namespace SzachyAI {
         public int HTTRANSPARENT = -1;
 
         public Graphics graphics;
+        public bool cornersVisible = false;
 
         protected override CreateParams CreateParams {
             get {
@@ -34,6 +35,7 @@ namespace SzachyAI {
 
         public void Clear() {
             graphics.Clear(BackColor);
+            cornersVisible = false;
         }
 
         public static Brush GetBrush(float winningProb) {
@@ -53,8 +55,10 @@ namespace SzachyAI {
             Location = new Point(corners.X + screenLoc.X - 2, corners.Y + screenLoc.Y - 2);
             ClientSize = new Size(corners.Width + 4, corners.Height + 4);
             graphics = CreateGraphics();
-            graphics.DrawRectangle(Pens.Red, 0, 0, corners.Width + 3, corners.Height + 3);
-            graphics.DrawRectangle(Pens.Red, 1, 1, corners.Width + 1, corners.Height + 1);
+            if (Settings.showBorder) {
+                graphics.DrawRectangle(Pens.Red, 0, 0, corners.Width + 3, corners.Height + 3);
+                graphics.DrawRectangle(Pens.Red, 1, 1, corners.Width + 1, corners.Height + 1);
+            }
             if (moves != null) {
                 foreach (Move move in moves) {
                     Point from = move.from;
@@ -72,6 +76,7 @@ namespace SzachyAI {
                     graphics.FillEllipse(brush, x2 - 5, y2 - 5, 10, 10);
                 }
             }
+            cornersVisible = true;
         }
 
         public void Draw(Screen screen, Rectangle corners) {

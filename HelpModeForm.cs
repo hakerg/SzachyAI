@@ -67,7 +67,7 @@ namespace SzachyAI
 
         private void HelpModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            menuForm.InvalidateBorder();
+            Invoke((Action)delegate { menuForm.drawing.Clear(); });
             menuForm.Show();
         }
 
@@ -88,10 +88,13 @@ namespace SzachyAI
             }
         }
 
-        public void UpdateStatus() {
-            commandLabel.Text = menuForm.status;
-            notifyIcon1.Text = "ChessAI: " + menuForm.status;
-            recognisedBoardPcBox.Image = menuForm.constructedImage;
+        public void UpdateStatus(string status) {
+            commandLabel.Text = status;
+            notifyIcon1.Text = "ChessAI: " + status;
+        }
+
+        public void UpdateImage(Bitmap image) {
+            recognisedBoardPcBox.Image = image;
         }
     }
 }
