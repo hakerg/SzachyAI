@@ -259,7 +259,6 @@ namespace SzachyAI
                 Invoke((Action)delegate { drawing.Clear(); });
                 cornersValid = false;
                 UpdateStatus(Status.BoardNotFound);
-                StopBot();
             }
         }
 
