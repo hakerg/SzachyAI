@@ -29,6 +29,7 @@ namespace SzachyAI
             eventTimeNumericUpDown.Value = Settings.eventTime;
             findTimeNumericUpDown.Value = Settings.findingTime;
             stockfishCheckBox.Checked = Settings.useStockfish;
+            displayMovesNumericUpDown.Value = Settings.displayMoves;
         }
 
         public SettingsForm(MenuForm menuForm)
@@ -85,6 +86,10 @@ namespace SzachyAI
 
         private void stockfishCheckBox_CheckedChanged(object sender, EventArgs e) {
             Settings.useStockfish = stockfishCheckBox.Checked;
+        }
+
+        private void displayMovesNumericUpDown_ValueChanged(object sender, EventArgs e) {
+            Settings.displayMoves = (int)displayMovesNumericUpDown.Value;
         }
     }
 }

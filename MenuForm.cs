@@ -228,6 +228,7 @@ namespace SzachyAI
                 UpdateStatus(Status.BoardFound);
                 cornersValid = true;
             } else {
+                Invoke((Action)delegate { drawing.Clear(); });
                 UpdateStatus(Status.BoardNotFound);
                 cornersValid = false;
                 giveHintOnce = false;
@@ -241,6 +242,8 @@ namespace SzachyAI
             //if (drawing.Bounds.Contains(Cursor.Position)) {
             //    Cursor.Position = new Point(drawing.Bounds.Right, drawing.Bounds.Bottom);
             //}
+            Invoke((Action)delegate { drawing.Clear(); });
+            Thread.Sleep(100);
             Image<Bgr, byte> boardScreenImage = BoardRecognizer.CaptureScreen(boardScreen);
             Image<Bgr, byte> boardImage = recognizer.GetScaledBoardImage(boardScreenImage, corners);
 
@@ -264,16 +267,19 @@ namespace SzachyAI
 
         private void FindAndProcessMove() {
             UpdateStatus(Status.FindingMove);
-            Move move;
+            List<Move> moves;
             if (Settings.useStockfish) {
-                move = lastBoard.GetStockfishMove(Settings.findingTime * 1000);
+                moves = new List<Move>();
+                Move move = lastBoard.GetStockfishMove(Settings.findingTime * 1000);
                 if (move != null) {
                     move.score = 100000;
+                    moves.Add(move);
                 }
             } else {
-                move = lastBoard.GetBestMove(DateTime.Now + TimeSpan.FromSeconds(Settings.findingTime));
+                moves = lastBoard.GetScoredMoves(DateTime.Now + TimeSpan.FromSeconds(Settings.findingTime));
             }
-            if (move != null) {
+            if (moves.Count > 0) {
+                Move move = moves[0];
                 UpdateStatus(lastBoard.MoveShortString(move));
 
                 // stop bot
@@ -285,7 +291,10 @@ namespace SzachyAI
                 if (giveHintOnce) {
                     switch (Settings.hintMode) {
                         case HintMode.DrawOnScreen:
-                            Invoke((Action)delegate { drawing.Draw(boardScreen, corners, new List<Move> { move }, lastBoard.rotated); });
+                            while (moves.Count > Settings.displayMoves) {
+                                moves.RemoveAt(moves.Count - 1);
+                            }
+                            Invoke((Action)delegate { drawing.Draw(boardScreen, corners, moves, lastBoard.rotated); });
                             break;
                         case HintMode.TextToSpeech:
                             synth.Speak(lastBoard.MoveLongString(move));
@@ -295,11 +304,7 @@ namespace SzachyAI
                 } else if (runBot) {
                     SimulateMove(move);
                     if (move.changeFrom != move.changeTo) {
-                        Invoke((Action)delegate {
-                            if (botModeForm != null && !botModeForm.IsDisposed) {
-                                botModeForm.StopBot();
-                            }
-                        });
+                        StopBot();
                     }
                 }
             } else {

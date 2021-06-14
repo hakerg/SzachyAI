@@ -19,5 +19,6 @@ namespace SzachyAI
         public static int eventTime = 100; // ms
         public static int findingTime = 2; // s
         public static bool useStockfish = true;
+        public static int displayMoves = 1;
     }
 }

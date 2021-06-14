@@ -60,6 +60,7 @@ namespace SzachyAI {
                 graphics.DrawRectangle(Pens.Red, 1, 1, corners.Width + 1, corners.Height + 1);
             }
             if (moves != null) {
+                moves = moves.Reverse<Move>().ToList();
                 foreach (Move move in moves) {
                     Point from = move.from;
                     Point to = move.to;

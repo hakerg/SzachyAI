@@ -67,6 +67,8 @@ namespace SzachyAI
 
         private void HelpModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            menuForm.detectBoardOnce = false;
+            menuForm.giveHintOnce = false;
             Invoke((Action)delegate { menuForm.drawing.Clear(); });
             menuForm.Show();
         }

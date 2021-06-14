@@ -43,8 +43,11 @@ namespace SzachyAI
             this.label5 = new System.Windows.Forms.Label();
             this.findTimeNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.stockfishCheckBox = new System.Windows.Forms.CheckBox();
+            this.displayMovesNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.eventTimeNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.findTimeNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.displayMovesNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -154,10 +157,33 @@ namespace SzachyAI
             this.stockfishCheckBox.UseVisualStyleBackColor = true;
             this.stockfishCheckBox.CheckedChanged += new System.EventHandler(this.stockfishCheckBox_CheckedChanged);
             // 
+            // displayMovesNumericUpDown
+            // 
+            resources.ApplyResources(this.displayMovesNumericUpDown, "displayMovesNumericUpDown");
+            this.displayMovesNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.displayMovesNumericUpDown.Name = "displayMovesNumericUpDown";
+            this.displayMovesNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.displayMovesNumericUpDown.ValueChanged += new System.EventHandler(this.displayMovesNumericUpDown_ValueChanged);
+            // 
+            // label6
+            // 
+            resources.ApplyResources(this.label6, "label6");
+            this.label6.Name = "label6";
+            // 
             // SettingsForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.displayMovesNumericUpDown);
             this.Controls.Add(this.stockfishCheckBox);
             this.Controls.Add(this.findTimeNumericUpDown);
             this.Controls.Add(this.label5);
@@ -175,6 +201,7 @@ namespace SzachyAI
             this.Name = "SettingsForm";
             ((System.ComponentModel.ISupportInitialize)(this.eventTimeNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.findTimeNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.displayMovesNumericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -194,5 +221,7 @@ namespace SzachyAI
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown findTimeNumericUpDown;
         private System.Windows.Forms.CheckBox stockfishCheckBox;
+        private System.Windows.Forms.NumericUpDown displayMovesNumericUpDown;
+        private System.Windows.Forms.Label label6;
     }
 }

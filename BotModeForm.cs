@@ -88,6 +88,7 @@ namespace SzachyAI
 
         private void BotModeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            menuForm.detectBoardOnce = false;
             StopBot();
             Invoke((Action)delegate { menuForm.drawing.Clear(); });
             menuForm.Show();

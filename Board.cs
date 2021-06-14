@@ -418,12 +418,9 @@ namespace SzachyAI {
             Console.WriteLine(move.StockfishString + ", depth " + (move.depth + 1) + ": " + move.score + " cp");
         }
 
-        public Move GetBestMove(DateTime timeout) {
+        public List<Move> GetScoredMoves(DateTime timeout) {
             List<Move> moves = GetMovesInaccurate();
-            if (moves.Count == 1) {
-                return moves[0];
-            }
-            if (moves.Count > 1) {
+            if (moves.Count > 0) {
                 Console.WriteLine("\nEvaluate moves for " + Chess.colorNames[(int)nextPlayer]);
                 Dictionary<Move, int> notBestSince = new Dictionary<Move, int>();
                 foreach (Move move in moves) {
@@ -433,16 +430,17 @@ namespace SzachyAI {
                     int best = int.MinValue;
                     foreach (Move move in moves) {
                         if (notBestSince[move] < 4) {
-                            move.depth++;
-                            CalculateMoveScore(move);
-                            if (move.score == 100000) {
-                                return move;
-                            } else if (move.score == -100000) {
-                                notBestSince[move] = 4;
+                            if (move.score < 100000) {
+                                move.depth++;
+                                CalculateMoveScore(move);
+                                if (move.score == -100000) {
+                                    notBestSince[move] = 4;
+                                }
                             }
                             best = Math.Max(best, move.score);
                         }
                     }
+                    moves.Sort((a, b) => b.score.CompareTo(a.score));
                     int checkCount = 0;
                     foreach (Move move in moves) {
                         if (move.score >= best) {
@@ -454,14 +452,12 @@ namespace SzachyAI {
                             checkCount++;
                         }
                     }
-                    if (checkCount <= 1) {
+                    if (checkCount == 0) {
                         break;
                     }
                 }
-                moves.Sort((a, b) => b.score.CompareTo(a.score));
-                return moves[0];
             }
-            return null;
+            return moves;
         }
 
         public bool IsLastMoveCheck() {
