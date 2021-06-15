@@ -167,7 +167,7 @@ namespace SzachyAI
         }
 
         private void UpdateImage(BoardView boardView) {
-            Bitmap constructedImage = recognizer.ConstructBoardImage(boardView).ToBitmap();
+            Bitmap constructedImage = boardView == null ? null : recognizer.ConstructBoardImage(boardView).ToBitmap();
             Invoke((Action)delegate {
                 if (helpModeForm != null && !helpModeForm.IsDisposed) {
                     helpModeForm.UpdateImage(constructedImage);
@@ -218,6 +218,7 @@ namespace SzachyAI
 
         private void FindCorners() {
             Invoke((Action)delegate { drawing.Clear(); });
+            UpdateImage(null);
             UpdateStatus(Status.DetectingCorners);
             Thread.Sleep(100);
             List<Image<Bgr, byte>> screens = BoardRecognizer.CaptureScreens();
